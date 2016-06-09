@@ -46,19 +46,29 @@ setindex!(a::AbstractSynapseDict, value, key::Symbol) = a.pd[key] = value
 
 # usage: @synapsetype MyType <: MySuperType
 macro synapsetype(expr)
-	@assert expr.head == :comparison
-	@assert expr.args[2] == :(<:)
-	@assert length(expr.args)==3
-
-	name = expr.args[1]
-	super = expr.args[3]
+	if expr.head == :<: # julia >= 0.5.0-
+		@assert length(expr.args)==2
+		name = expr.args[1]
+		super = expr.args[2]
+	else # julia 0.4.x
+		@assert expr.head == :comparison
+		@assert expr.args[2] == :(<:)
+		@assert length(expr.args)==3
+		name = expr.args[1]
+		super = expr.args[3]
+	end
 
 	esc(quote
 		immutable $name <: $super
 			po::PyObject
+			# function $name(po::PyObject)
+			# 	@assert pytypeof(po)==synapseclient.$name # doesn't work for Synapse type
+			# 	new(po)
+			# end
 		end
 		$name(args...;kwargs...) = $name(synapseclient.$name(args...;kwargs...))
 	end)
+
 end
 
 # usage: @dicttype MyDictType
