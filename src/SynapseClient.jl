@@ -52,7 +52,10 @@ export
 	submit,
 	tablequery,
 	updateactivity,
-	uploadfile
+	uploadfile,
+	used,
+	executed
+
 
 include("wrapper.jl")
 include("types.jl")

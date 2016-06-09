@@ -62,11 +62,11 @@ macro synapsetype(expr)
 		immutable $name <: $super
 			po::PyObject
 			# function $name(po::PyObject)
-			# 	@assert pytypeof(po)==synapseclient.$name # doesn't work for Synapse type
+			# 	@assert pytypeof(po)==synapseclient.$name # doesn't work for synapseclient.Synapse type
 			# 	new(po)
 			# end
 		end
-		$name(args...;kwargs...) = $name(synapseclient.$name(args...;kwargs...))
+		$name(args...;kwargs...) = $name(pycall(synapseclient.$name,PyObject,args...;kwargs...))
 	end)
 
 end
@@ -82,7 +82,7 @@ macro dicttype(name)
 			end
 		end
 		$name(po::PyObject) = $name(PyDict(po))
-		$name(args...;kwargs...) = $name(synapseclient.$name(args...;kwargs...))
+		$name(args...;kwargs...) = $name(pycall(synapseclient.$name,PyObject,args...;kwargs...))
 	end)
 end
 

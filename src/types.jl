@@ -11,3 +11,6 @@ import Base: getindex
 @dicttype Activity
 @dicttype Wiki
 @dicttype Team
+
+@synapsefunction Activity used
+@synapsefunction Activity executed
