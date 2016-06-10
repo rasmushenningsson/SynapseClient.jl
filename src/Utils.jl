@@ -1,7 +1,7 @@
 module Utils
 
 
-import SynapseClient: @utilfunction, utilcall
+import SynapseClient: @utilfunction, @standalonefunction, synapsecall, synapseclient
 
 
 @utilfunction as_url

@@ -3,6 +3,8 @@ module SynapseClient
 using PyCall
 @pyimport synapseclient
 @pyimport synapseclient.client as client
+@pyimport synapseclient.annotations as annotations
+@pyimport synapseclient.dict_object as dict_object
 
 import Base: get
 
@@ -53,8 +55,11 @@ export
 	tablequery,
 	updateactivity,
 	uploadfile,
+	create,
 	used,
-	executed
+	executed,
+	split_entity_namespaces,
+	is_container
 
 
 include("wrapper.jl")

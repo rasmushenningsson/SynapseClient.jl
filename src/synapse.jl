@@ -1,4 +1,5 @@
-@synapsetype Synapse <: AbstractSynapse
+#@synapsetype Synapse <: AbstractSynapse
+@createtype(Synapse,AbstractSynapse,synapseclient.Synapse,PyObject,false)
 
 login(args...;kwargs...) = Synapse(synapseclient.login(args...;kwargs...))
 check_for_updates(args...;kwargs...) = synapseclient.check_for_updates(args...;kwargs...)

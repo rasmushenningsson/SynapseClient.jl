@@ -1,16 +1,25 @@
 import Base: getindex
 
-@synapsetype Entity  <: AbstractEntity
-@synapsetype Project <: AbstractEntity
-@synapsetype Folder  <: AbstractEntity
-@synapsetype File    <: AbstractEntity
-@synapsetype Link    <: AbstractEntity
-@synapsetype Schema  <: AbstractEntity
+@entitytype Entity
+@entitytype Project
+@entitytype Folder
+@entitytype File
+@entitytype Link
+@entitytype Schema
 
-@dicttype Evaluation
-@dicttype Activity
-@dicttype Wiki
-@dicttype Team
+@dicttype DictObject  dict_object.DictObject
+@dicttype Evaluation 
+@dicttype Activity   
+@dicttype Annotations annotations.Annotations
+@dicttype Wiki       
+@dicttype Team       
+
+create(::Type{Entity},args...;kwargs...) = synapsecall(synapseclient.Entity,:create,args...;kwargs...)
 
 @synapsefunction Activity used
 @synapsefunction Activity executed
+
+
+# TODO: should this be here?
+@entityfunction split_entity_namespaces
+@entityfunction is_container

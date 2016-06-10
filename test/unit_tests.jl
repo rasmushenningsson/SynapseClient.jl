@@ -1,13 +1,13 @@
-_raise_for_status = SynapseClient.synapseclient.exceptions[:_raise_for_status]
-SynapseMalformedEntityError = SynapseClient.synapseclient.exceptions[:SynapseMalformedEntityError]
-SynapseHTTPError = SynapseClient.synapseclient.exceptions[:SynapseHTTPError]
-ValueError = pyeval("ValueError") # TODO: is there a better way to do this???
-
-DictObject = SynapseClient.synapseclient.dict_object[:DictObject]
-
 _find_used(activity::Activity,predicate::Function) = activity[:used][findfirst(predicate, activity[:used])]
 utils_is_json = SynapseClient.synapseclient.utils[:_is_json]
 utils_limit_and_offset = SynapseClient.synapseclient.utils[:_limit_and_offset]
+
+
+
+
+
+
+
 
 
 
@@ -352,7 +352,7 @@ facts("time_manipulation") do
 end
 
 facts("raise_for_status") do
-	@pydef type FakeResponse <: DictObject
+	@pydef type FakeResponse <: PyDictObject
 		json(self) = self["_json"] # why can't I use self._json here?
 	end
 
@@ -362,11 +362,11 @@ facts("raise_for_status") do
 	    reason="SchlumpError",
 	    text="{\"reason\":\"it schlumped\"}",
 	    _json=Dict("reason"=>"it schlumped"),
-	    request=DictObject(
-	        url="http://foo.com/bar/bat",
-	        headers=Dict("xyz"=>"pdq"),
-	        method="PUT",
-	        body="body"))
+	    request=Dict(
+	        "url"=>"http://foo.com/bar/bat",
+	        "headers"=>Dict("xyz"=>"pdq"),
+	        "method"=>"PUT",
+	        "body"=>"body"))
 
     @fact_pythrows SynapseHTTPError _raise_for_status(response, verbose=false)
 end

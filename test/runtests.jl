@@ -1,6 +1,17 @@
 using SynapseClient, PyCall
 using FactCheck
-import SynapseClient: Utils, Activity
+import SynapseClient: Utils, Activity, Folder, File, Project
+
+ValueError = pybuiltin(:ValueError)
+
+_raise_for_status = SynapseClient.synapseclient.exceptions[:_raise_for_status]
+SynapseMalformedEntityError = SynapseClient.synapseclient.exceptions[:SynapseMalformedEntityError]
+SynapseHTTPError = SynapseClient.synapseclient.exceptions[:SynapseHTTPError]
+
+
+PyDictObject = SynapseClient.synapseclient.dict_object[:DictObject]
+PyFile = SynapseClient.synapseclient.File
+
 
 macro catchpyerror(expr)
 	quote
@@ -22,3 +33,5 @@ end
 
 
 include("unit_tests.jl")
+include("unit_test_Entity.jl")
+include("unit_test_Wiki.jl")
