@@ -5,6 +5,7 @@ import SynapseClient: @utilfunction, utilcall
 
 
 @utilfunction as_url
+@utilfunction datetime_to_iso
 @utilfunction download_file
 @utilfunction equal_paths
 @utilfunction extract_filename
@@ -22,10 +23,12 @@ import SynapseClient: @utilfunction, utilcall
 @utilfunction is_same_base_url
 @utilfunction is_synapse_id
 @utilfunction is_url
+@utilfunction iso_to_datetime
 #@utilfunction itersubclasses
 @utilfunction make_bogus_binary_file
 @utilfunction make_bogus_data_file
 @utilfunction md5_for_file
+@utilfunction normalize_lines
 @utilfunction normalize_path
 @utilfunction normalize_whitespace
 @utilfunction printTransferProgress
