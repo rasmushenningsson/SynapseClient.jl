@@ -1,9 +1,12 @@
-import Base: convert, ==, getindex, setindex!, haskey
+import Base: convert, ==, getindex, setindex!, haskey,
+             length, start, next, done, eltype,
+             get, get!, getkey, delete!, pop!, keys, values, merge, merge!,
+             sizehint!, keytype, valtype
 
 # AbstractSynapse is used for all PyObjects that are wrapped in a Julia type
 abstract AbstractSynapse
 abstract AbstractEntity <: AbstractSynapse
-abstract AbstractSynapseDict <: Associative # Would have preferred multiple inheritance. Use traits?
+abstract AbstractSynapseDict <: Associative{Any,Any} # Would have preferred multiple inheritance. Use traits?
 
 # utility function for making sure AbstractSynapse objects are passed as PyObjects to python
 pythonobject(a::Any) = a # fallback
@@ -150,3 +153,28 @@ setindex!(a::AbstractSynapseDict, value, key::Symbol) = a.po[string(key)] = valu
 hasattr = pybuiltin(:hasattr)
 haskey(e::AbstractEntity, key)      = synapsecall(hasattr, e, key)
 haskey(d::AbstractSynapseDict, key) = haskey(pythonobject(d), key)
+
+
+length(a::AbstractSynapseDict) = length(a.po)
+start(a::AbstractSynapseDict) = start(a.po)
+next(a::AbstractSynapseDict,state) = next(a.po,state)
+done(a::AbstractSynapseDict,state) = done(a.po,state)
+eltype(::Type{AbstractSynapseDict}) = Pair{Any,Any}#eltype(PyDict) # PyDict bug?
+
+
+get(a::AbstractSynapseDict, key, default) = get(a.po,key,default)
+get(f::Function, a::AbstractSynapseDict, key) = get(f,a.po,key)
+get!(a::AbstractSynapseDict, key, default) = get(!a.po,key,default)
+get!(f::Function, a::AbstractSynapseDict, key) = get!(f,a.po,key)
+getkey(a::AbstractSynapseDict, key, default) = getkey(a.po,key,default)
+delete!(a::AbstractSynapseDict, key) = delete!(a.po,key)
+pop!(a::AbstractSynapseDict, key) = pop!(a.po,key)
+pop!(a::AbstractSynapseDict, key, default) = pop!(a.po,key,default)
+keys(a::AbstractSynapseDict) = keys(a.po)
+values(a::AbstractSynapseDict) = values(a.po)
+merge{T<:AbstractSynapseDict}(a::T, others...) = T(merge(a.po,others))
+merge!{T<:AbstractSynapseDict}(a::T, others...) = merge!(a.po,others)
+sizehint!(a::AbstractSynapseDict, n) = sizehint!(a.po,n)
+keytype(a::AbstractSynapseDict) = keytype(a.po)
+valtype(a::AbstractSynapseDict) = valuetype(a.po)
+
