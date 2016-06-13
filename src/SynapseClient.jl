@@ -59,8 +59,12 @@ export
 	used,
 	executed,
 	split_entity_namespaces,
-	is_container
-
+	is_container,
+	to_synapse_annotations,
+	from_synapse_annotations,
+	to_submission_status_annotations,
+	from_submission_status_annotations,
+	set_privacy
 
 include("wrapper.jl")
 include("types.jl")

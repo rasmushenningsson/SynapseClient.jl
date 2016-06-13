@@ -19,27 +19,6 @@ pythonobjecttuple(t::Tuple{Symbol,AbstractSynapseDict}) = (t[1],PyObject(t[2].po
 
 # wrappythonobject is more or less the inverse of pythonobject()
 wrappythonobject(x::Any) = x # fallback
-
-# function wrappythonobject(po::PyObject)
-# 	if pyisinstance(po, synapseclient.Entity)
-# 		pyisinstance(po, synapseclient.Project) && return Project(po)
-# 		pyisinstance(po, synapseclient.Folder)  && return Folder(po)
-# 		pyisinstance(po, synapseclient.File)    && return File(po)
-# 		pyisinstance(po, synapseclient.Link)    && return Link(po)
-# 		pyisinstance(po, synapseclient.Schema)  && return Schema(po)
-# 		return Entity(po)
-# 	end
-# 	pyisinstance(po, synapseclient.Evaluation) && return Evaluation(po)
-# 	pyisinstance(po, synapseclient.Activity)   && return Activity(po)
-# 	pyisinstance(po, synapseclient.Wiki)       && return Wiki(po)
-# 	pyisinstance(po, synapseclient.Team)       && return Team(po)
-# 	pyisinstance(po, client.Synapse)           && return Synapse(po)
-
-# 	pyisinstance(po, synapseclient.dict_object[:DictObject]) && return PyCall.PyDict(po) # IMPORTANT - do not convert python dictionaries since that will create a copy!
-
-# 	convert(pytype_query(po),po) # fallback to default python -> julia conversion
-# end
-
 function wrappythonobject(po::PyObject)
 	if pyisinstance(po, synapseclient.Entity)
 		pyisinstance(po, synapseclient.Project) && return Project(po)
@@ -58,6 +37,9 @@ function wrappythonobject(po::PyObject)
 	pyisinstance(po, synapseclient.Activity)  && return Activity(po)
 	pyisinstance(po, annotations.Annotations) && return Annotations(po)
 	pyisinstance(po, client.Synapse)          && return Synapse(po)
+
+	# IMPORTANT: do not convert python dicts because that will make a copy
+	pyisinstance(po, pybuiltin(:dict)) && return PyDict(po)
 
 	convert(pytype_query(po),po) # fallback to default python -> julia conversion
 end
@@ -99,19 +81,22 @@ macro standalonefunction(parent, name)
 	x = Expr(:quote,name) # x is now :(:val) where val is $name
 	name = lowercasesymbol(name)
 	esc(:(  $name(args...;kwargs...) = synapsecall($parent,$x,args...;kwargs...)  ))
-end
 
+end
 macro utilfunction(name)
 	esc(:( @standalonefunction(synapseclient.utils, $name) ))
 end
 macro entityfunction(name)
 	esc(:( @standalonefunction(synapseclient.entity, $name) ))
 end
+macro annotationsfunction(name)
+	esc(:( @standalonefunction(synapseclient.annotations, $name) ))
+end
 
 
 
 macro createtype(name, super, wrappedClass, storageClass, doAssert)
-	assert = doAssert ? :(@assert pytypeof(convert(PyObject,po))==$wrappedClass) : Symbol()
+	assert = doAssert ? :(@assert pytypeof(po)==$wrappedClass) : (:;)
 
 	esc(quote
 		immutable $name <: $super

@@ -1,8 +1,9 @@
 using SynapseClient, PyCall
 using FactCheck
-import SynapseClient: Utils, Activity, Folder, File, Project
+import SynapseClient: Utils, Activity, Folder, File, Project, Evaluation, Submission
 
 ValueError = pybuiltin(:ValueError)
+PyKeyError = pybuiltin(:KeyError)
 
 _raise_for_status = SynapseClient.synapseclient.exceptions[:_raise_for_status]
 SynapseMalformedEntityError = SynapseClient.synapseclient.exceptions[:SynapseMalformedEntityError]
@@ -32,6 +33,10 @@ macro fact_pythrows( exception, expr )
 end
 
 
+
+
 include("unit_tests.jl")
+include("unit_test_annotations.jl")
 include("unit_test_Entity.jl")
+include("unit_test_Evaluation.jl")
 include("unit_test_Wiki.jl")
