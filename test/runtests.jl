@@ -1,6 +1,6 @@
 using SynapseClient, PyCall
 using FactCheck
-import SynapseClient: Utils, Activity, Folder, File, Project, Evaluation, Submission
+import SynapseClient: Utils, Activity, Folder, File, Project, Evaluation, Submission, DictObject
 
 ValueError = pybuiltin(:ValueError)
 PyKeyError = pybuiltin(:KeyError)
@@ -40,3 +40,4 @@ include("unit_test_annotations.jl")
 include("unit_test_Entity.jl")
 include("unit_test_Evaluation.jl")
 include("unit_test_Wiki.jl")
+include("unit_test_DictObject.jl")
