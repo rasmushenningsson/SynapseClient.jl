@@ -39,6 +39,4 @@ import SynapseClient: @utilfunction, @standalonefunction, synapsecall, synapsecl
 @utilfunction touch
 @utilfunction unique_filename
 
-
-
 end

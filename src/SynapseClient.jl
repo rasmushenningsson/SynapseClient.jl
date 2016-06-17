@@ -10,6 +10,8 @@ import Base: get
 
 export
 	Synapse,
+
+	# SynapseClient
 	chunkedquery,
 	delete,
 	deleteprovenance,
@@ -55,11 +57,19 @@ export
 	tablequery,
 	updateactivity,
 	uploadfile,
+
+	# Entity
 	create,
+
+	# Activity
 	used,
 	executed,
+
+	# from Entity	
 	split_entity_namespaces,
 	is_container,
+
+	# annotations
 	to_synapse_annotations,
 	from_synapse_annotations,
 	to_submission_status_annotations,

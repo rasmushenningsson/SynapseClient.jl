@@ -51,3 +51,7 @@ release_notes(args...;kwargs...) = synapseclient.release_notes(args...;kwargs...
 @synapsefunction Synapse tableQuery
 @synapsefunction Synapse updateActivity
 @synapsefunction Synapse uploadFile
+
+# not exported
+@synapsefunction Synapse _list
+@synapsefunction Synapse query
