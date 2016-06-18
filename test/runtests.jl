@@ -1,6 +1,6 @@
 using SynapseClient, PyCall
 using FactCheck
-import SynapseClient: Utils, Activity, Folder, File, Project, Evaluation, Submission, DictObject
+import SynapseClient: utils, Activity, Folder, File, Project, Evaluation, Submission, DictObject
 
 ValueError = pybuiltin(:ValueError)
 PyKeyError = pybuiltin(:KeyError)

@@ -2,9 +2,9 @@ module SynapseClient
 
 using PyCall
 @pyimport synapseclient
-@pyimport synapseclient.client as client
-@pyimport synapseclient.annotations as annotations
-@pyimport synapseclient.dict_object as dict_object
+@pyimport synapseclient.client as pyclient
+@pyimport synapseclient.annotations as pyannotations
+@pyimport synapseclient.dict_object as pydict_object
 
 import Base: get
 
@@ -63,22 +63,13 @@ export
 
 	# Activity
 	used,
-	executed,
-
-	# from Entity	
-	split_entity_namespaces,
-	is_container,
-
-	# annotations
-	to_synapse_annotations,
-	from_synapse_annotations,
-	to_submission_status_annotations,
-	from_submission_status_annotations,
-	set_privacy
+	executed
 
 include("wrapper.jl")
 include("types.jl")
 include("synapse.jl")
-include("Utils.jl")
+include("utils.jl")
+include("entity.jl")
+include("annotations.jl")
 
 end

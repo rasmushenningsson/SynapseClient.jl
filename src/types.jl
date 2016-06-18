@@ -7,11 +7,11 @@ import Base: getindex
 @entitytype Link
 @entitytype Schema
 
-@dicttype DictObject  dict_object.DictObject
+@dicttype DictObject  pydict_object.DictObject
 @dicttype Evaluation
 @dicttype Submission
 @dicttype Activity
-@dicttype Annotations annotations.Annotations
+@dicttype Annotations pyannotations.Annotations
 @dicttype Wiki
 @dicttype Team
 
@@ -19,15 +19,3 @@ create(::Type{Entity},args...;kwargs...) = synapsecall(synapseclient.Entity,:cre
 
 @synapsefunction Activity used
 @synapsefunction Activity executed
-
-
-# TODO: should this be here?
-@entityfunction split_entity_namespaces
-@entityfunction is_container
-
-
-@annotationsfunction to_synapse_annotations
-@annotationsfunction from_synapse_annotations
-@annotationsfunction to_submission_status_annotations
-@annotationsfunction from_submission_status_annotations
-@annotationsfunction set_privacy

@@ -14,7 +14,7 @@
 # import synapseclient.utils as utils
 # from synapseclient.annotations import to_synapse_annotations, from_synapse_annotations, to_submission_status_annotations, from_submission_status_annotations, set_privacy
 # from synapseclient.exceptions import *
-
+using SynapseClient.annotations
 
 
 
@@ -70,7 +70,7 @@ facts("more_annotations") do
     @fact sa["stringAnnotations"]["test_mo_booleans"] --> ["False", "True", "True", "False"]
 
     ## this part of the test is kinda fragile. It it breaks again, it should be removed
-    bdays = [Utils.from_unix_epoch_time(t) for t in sa["dateAnnotations"]["birthdays"]]
+    bdays = [utils.from_unix_epoch_time(t) for t in sa["dateAnnotations"]["birthdays"]]
     @fact all(Bool[t in bdays for t in [Dates.DateTime(1969,4,28), Dates.DateTime(1973,12,8), Dates.DateTime(2008,1,3)]]) --> true
 end
 facts("annotations_unicode") do
@@ -127,7 +127,7 @@ facts("submission_status_annotations_round_trip") do
         value = kvp["value"]
         key=="lucky" && @fact value --> 13
 
-        key=="birthday" && @fact Utils.from_unix_epoch_time(value) --> april_28_1969
+        key=="birthday" && @fact utils.from_unix_epoch_time(value) --> april_28_1969
     end
 
     @fact Set([kvp["key"] for kvp in sa["doubleAnnos"]]) --> Set(["pi"])
@@ -142,7 +142,7 @@ facts("submission_status_annotations_round_trip") do
     end
     a2 = from_submission_status_annotations(sa)
     # TODO: is there a way to convert dates back from longs automatically?
-    a2["birthday"] = Utils.from_unix_epoch_time(a2["birthday"])
+    a2["birthday"] = utils.from_unix_epoch_time(a2["birthday"])
     @fact a --> a2
 
     ## test idempotence

@@ -8,7 +8,7 @@
 #from synapseclient.entity import Entity, Project, Folder, File, split_entity_namespaces, is_container
 #from synapseclient.exceptions import *
 import SynapseClient: Entity
-
+using SynapseClient.entity
 
 
 

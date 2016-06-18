@@ -139,21 +139,21 @@ end
 
 facts("is_url") do
 	# """test the ability to determine whether a string is a URL"""
-	@fact Utils.is_url("http://mydomain.com/foo/bar/bat?asdf=1234&qewr=ooo") --> true
-	@fact Utils.is_url("http://xkcd.com/1193/") --> true
-	@fact Utils.is_url("syn123445") --> false
-	@fact Utils.is_url("wasssuuuup???") --> false
-	@fact Utils.is_url("file://foo.com/path/to/file.xyz") --> true
-	@fact Utils.is_url("file:///path/to/file.xyz") --> true
-	@fact Utils.is_url("file:/path/to/file.xyz") --> true
-	@fact Utils.is_url("file:///c:/WINDOWS/clock.avi") --> true
-	@fact Utils.is_url("file:c:/WINDOWS/clock.avi") --> true
-	@fact Utils.is_url("c:/WINDOWS/ugh/ugh.ugh") --> false
+	@fact utils.is_url("http://mydomain.com/foo/bar/bat?asdf=1234&qewr=ooo") --> true
+	@fact utils.is_url("http://xkcd.com/1193/") --> true
+	@fact utils.is_url("syn123445") --> false
+	@fact utils.is_url("wasssuuuup???") --> false
+	@fact utils.is_url("file://foo.com/path/to/file.xyz") --> true
+	@fact utils.is_url("file:///path/to/file.xyz") --> true
+	@fact utils.is_url("file:/path/to/file.xyz") --> true
+	@fact utils.is_url("file:///c:/WINDOWS/clock.avi") --> true
+	@fact utils.is_url("file:c:/WINDOWS/clock.avi") --> true
+	@fact utils.is_url("c:/WINDOWS/ugh/ugh.ugh") --> false
 end
 facts("windows_file_urls") do
 	url = "file:///c:/WINDOWS/clock.avi"
-	@fact Utils.is_url(url) --> true
-	@fact Utils.file_url_to_path(url, verify_exists=false)["path"] == "c:/WINDOWS/clock.avi" --> true Utils.file_url_to_path(url)
+	@fact utils.is_url(url) --> true
+	@fact utils.file_url_to_path(url, verify_exists=false)["path"] == "c:/WINDOWS/clock.avi" --> true utils.file_url_to_path(url)
 end
 
 facts("is_in_path") do
@@ -162,48 +162,48 @@ facts("is_in_path") do
                       Dict("id"=>"syn537704", "name"=>"my Test project", "type"=>"org.sagebionetworks.repo.model.Project"),
                       Dict("id"=>"syn2385356","name"=>".emacs", "type"=>"org.sagebionetworks.repo.model.FileEntity")])
 
-    @fact Utils.is_in_path("syn537704", path) --> true
-    @fact Utils.is_in_path("syn123", path) --> false
+    @fact utils.is_in_path("syn537704", path) --> true
+    @fact utils.is_in_path("syn123", path) --> false
 end
 facts("id_of") do
-    @fact Utils.id_of(1) --> "1"
-    @fact Utils.id_of("syn12345") --> "syn12345"
-    @fact Utils.id_of(Dict("foo"=>1, "id"=>123)) --> 123
-    @fact_pythrows ValueError Utils.id_of(Dict("foo"=>1, "idzz"=>123))
-    @fact Utils.id_of(Dict("properties"=>Dict("id"=>123))) --> 123
-    @fact_pythrows ValueError Utils.id_of(Dict("properties"=>Dict("qq"=>123)))
-    @fact_pythrows ValueError Utils.id_of(pyeval("object()"))
+    @fact utils.id_of(1) --> "1"
+    @fact utils.id_of("syn12345") --> "syn12345"
+    @fact utils.id_of(Dict("foo"=>1, "id"=>123)) --> 123
+    @fact_pythrows ValueError utils.id_of(Dict("foo"=>1, "idzz"=>123))
+    @fact utils.id_of(Dict("properties"=>Dict("id"=>123))) --> 123
+    @fact_pythrows ValueError utils.id_of(Dict("properties"=>Dict("qq"=>123)))
+    @fact_pythrows ValueError utils.id_of(pyeval("object()"))
 
     # class Foo:
     #     def __init__(self, id):
     #         self.properties = Dict("id"=>id)
 
     # foo = Foo(123)
-    # @fact Utils.id_of(foo) --> 123 # TODO: is there a reasonable julia version of this test?
+    # @fact utils.id_of(foo) --> 123 # TODO: is there a reasonable julia version of this test?
 end
 facts("guess_file_name") do
-    @fact Utils.guess_file_name("a/b") --> "b"
-    @fact Utils.guess_file_name("file:///a/b") --> "b"
-    @fact Utils.guess_file_name("A:/a/b") --> "b"
-    @fact Utils.guess_file_name("B:/a/b/") --> "b"
-    @fact Utils.guess_file_name("c:\\a\\b") --> "b"
-    @fact Utils.guess_file_name("d:\\a\\b\\") --> "b"
-    @fact Utils.guess_file_name("E:\\a/b") --> "b"
-    @fact Utils.guess_file_name("F:\\a/b/") --> "b"
-    @fact Utils.guess_file_name("/a/b") --> "b"
-    @fact Utils.guess_file_name("/a/b/") --> "b"
-    @fact Utils.guess_file_name("http://www.a.com/b") --> "b"
-    @fact Utils.guess_file_name("http://www.a.com/b/") --> "b"
-    @fact Utils.guess_file_name("http://www.a.com/b?foo=bar") --> "b"
-    @fact Utils.guess_file_name("http://www.a.com/b/?foo=bar") --> "b"
-    @fact Utils.guess_file_name("http://www.a.com/b?foo=bar&arga=barga") --> "b"
-    @fact Utils.guess_file_name("http://www.a.com/b/?foo=bar&arga=barga") --> "b"
+    @fact utils.guess_file_name("a/b") --> "b"
+    @fact utils.guess_file_name("file:///a/b") --> "b"
+    @fact utils.guess_file_name("A:/a/b") --> "b"
+    @fact utils.guess_file_name("B:/a/b/") --> "b"
+    @fact utils.guess_file_name("c:\\a\\b") --> "b"
+    @fact utils.guess_file_name("d:\\a\\b\\") --> "b"
+    @fact utils.guess_file_name("E:\\a/b") --> "b"
+    @fact utils.guess_file_name("F:\\a/b/") --> "b"
+    @fact utils.guess_file_name("/a/b") --> "b"
+    @fact utils.guess_file_name("/a/b/") --> "b"
+    @fact utils.guess_file_name("http://www.a.com/b") --> "b"
+    @fact utils.guess_file_name("http://www.a.com/b/") --> "b"
+    @fact utils.guess_file_name("http://www.a.com/b?foo=bar") --> "b"
+    @fact utils.guess_file_name("http://www.a.com/b/?foo=bar") --> "b"
+    @fact utils.guess_file_name("http://www.a.com/b?foo=bar&arga=barga") --> "b"
+    @fact utils.guess_file_name("http://www.a.com/b/?foo=bar&arga=barga") --> "b"
 end
 facts("extract_filename") do
-    @fact Utils.extract_filename("attachment; filename=\"fname.ext\"") --> "fname.ext"
-    @fact Utils.extract_filename("attachment; filename=fname.ext") --> "fname.ext"
-    @fact Utils.extract_filename(Void()) --> Void()
-    @fact Utils.extract_filename(Void(), "fname.ext") --> "fname.ext"
+    @fact utils.extract_filename("attachment; filename=\"fname.ext\"") --> "fname.ext"
+    @fact utils.extract_filename("attachment; filename=fname.ext") --> "fname.ext"
+    @fact utils.extract_filename(Void()) --> Void()
+    @fact utils.extract_filename(Void(), "fname.ext") --> "fname.ext"
 end
 facts("version_check") do
     _version_tuple = SynapseClient.synapseclient.version_check[:_version_tuple]
@@ -215,16 +215,16 @@ facts("normalize_path") do
     ## tests should pass on reasonable OSes and also on windows
 
     ## resolves relative paths
-    @fact length(Utils.normalize_path("asdf.txt")) > 8 --> true
+    @fact length(utils.normalize_path("asdf.txt")) > 8 --> true
 
     ## doesn't resolve home directory references
-    #@fact '~' in Utils.normalize_path("~/asdf.txt") --> false
+    #@fact '~' in utils.normalize_path("~/asdf.txt") --> false
 
     ## converts back slashes to forward slashes
-    @fact '\\' in Utils.normalize_path("\\windows\\why\\why\\why.txt") --> false
+    @fact '\\' in utils.normalize_path("\\windows\\why\\why\\why.txt") --> false
 
     ## what's the right thing to do for None?
-    @fact Utils.normalize_path(Void()) --> Void()
+    @fact utils.normalize_path(Void()) --> Void()
 end
 facts("limit_and_offset") do
     query_params(uri) = Dict([ (split(kvp,'=')...) for kvp in split(split(uri,'?')[2],'&') ])
@@ -256,17 +256,17 @@ end
 
 facts("utils_extract_user_name") do
     profile = Dict("firstName"=>"Madonna")
-    @fact Utils.extract_user_name(profile) --> "Madonna"
+    @fact utils.extract_user_name(profile) --> "Madonna"
     profile = Dict{ASCIIString,Any}("firstName"=>"Oscar", "lastName"=>"the Grouch")
-    @fact Utils.extract_user_name(profile) --> "Oscar the Grouch"
+    @fact utils.extract_user_name(profile) --> "Oscar the Grouch"
     profile["displayName"] = Void()
-    @fact Utils.extract_user_name(profile) --> "Oscar the Grouch"
+    @fact utils.extract_user_name(profile) --> "Oscar the Grouch"
     profile["displayName"] = ""
-    @fact Utils.extract_user_name(profile) --> "Oscar the Grouch"
+    @fact utils.extract_user_name(profile) --> "Oscar the Grouch"
     profile["displayName"] = "Assistant Professor Oscar the Grouch, PhD"
-    @fact Utils.extract_user_name(profile) --> "Assistant Professor Oscar the Grouch, PhD"
+    @fact utils.extract_user_name(profile) --> "Assistant Professor Oscar the Grouch, PhD"
     profile["userName"] = "otg"
-    @fact Utils.extract_user_name(profile) --> "otg"
+    @fact utils.extract_user_name(profile) --> "otg"
 end
 facts("is_json") do
     @fact utils_is_json("application/json") --> true
@@ -284,69 +284,69 @@ facts("unicode_output") do
     #     print("can't display unicode, skipping test_unicode_output...")
 end
 facts("normalize_whitespace") do
-    @fact Utils.normalize_whitespace("   zip\ttang   pow   \n    a = 2   ") --> "zip tang pow a = 2"
-    result = Utils.normalize_lines("   zip\ttang   pow   \n    a = 2   \n    b = 3   ")
+    @fact utils.normalize_whitespace("   zip\ttang   pow   \n    a = 2   ") --> "zip tang pow a = 2"
+    result = utils.normalize_lines("   zip\ttang   pow   \n    a = 2   \n    b = 3   ")
     @fact "zip tang pow\na = 2\nb = 3" --> result
 end
 
 facts("query_limit_and_offset") do
-    query, limit, offset = Utils.query_limit_and_offset("select foo from bar where zap > 2 limit 123 offset 456")
+    query, limit, offset = utils.query_limit_and_offset("select foo from bar where zap > 2 limit 123 offset 456")
     println(query, limit, offset)
     @fact query --> "select foo from bar where zap > 2"
     @fact limit --> 123
     @fact offset --> 456
 
-    query, limit, offset = Utils.query_limit_and_offset("select limit from offset where limit==2 limit 123 offset 456")
+    query, limit, offset = utils.query_limit_and_offset("select limit from offset where limit==2 limit 123 offset 456")
     @fact query --> "select limit from offset where limit==2"
     @fact limit --> 123
     @fact offset --> 456
 
-    query, limit, offset = Utils.query_limit_and_offset("select foo from bar where zap > 2 limit 123")
+    query, limit, offset = utils.query_limit_and_offset("select foo from bar where zap > 2 limit 123")
     @fact query --> "select foo from bar where zap > 2"
     @fact limit --> 123
     @fact offset --> 1
 
-    query, limit, offset = Utils.query_limit_and_offset("select foo from bar where zap > 2 limit 65535", hard_limit=1000)
+    query, limit, offset = utils.query_limit_and_offset("select foo from bar where zap > 2 limit 65535", hard_limit=1000)
     @fact query --> "select foo from bar where zap > 2"
     @fact limit --> 1000
     @fact offset --> 1
 end
 facts("as_urls") do
-    @fact Utils.as_url("C:\\Users\\Administrator\\AppData\\Local\\Temp\\2\\tmpvixuld.txt") --> "file:///C:/Users/Administrator/AppData/Local/Temp/2/tmpvixuld.txt"
-    @fact Utils.as_url("/foo/bar/bat/zoinks.txt") --> "file:///foo/bar/bat/zoinks.txt"
-    @fact Utils.as_url("http://foo/bar/bat/zoinks.txt") --> "http://foo/bar/bat/zoinks.txt"
-    @fact Utils.as_url("ftp://foo/bar/bat/zoinks.txt") --> "ftp://foo/bar/bat/zoinks.txt"
-    @fact Utils.as_url("sftp://foo/bar/bat/zoinks.txt") --> "sftp://foo/bar/bat/zoinks.txt"
+    @fact utils.as_url("C:\\Users\\Administrator\\AppData\\Local\\Temp\\2\\tmpvixuld.txt") --> "file:///C:/Users/Administrator/AppData/Local/Temp/2/tmpvixuld.txt"
+    @fact utils.as_url("/foo/bar/bat/zoinks.txt") --> "file:///foo/bar/bat/zoinks.txt"
+    @fact utils.as_url("http://foo/bar/bat/zoinks.txt") --> "http://foo/bar/bat/zoinks.txt"
+    @fact utils.as_url("ftp://foo/bar/bat/zoinks.txt") --> "ftp://foo/bar/bat/zoinks.txt"
+    @fact utils.as_url("sftp://foo/bar/bat/zoinks.txt") --> "sftp://foo/bar/bat/zoinks.txt"
 end
 
 facts("time_manipulation") do
-    round_tripped_datetime = Utils.datetime_to_iso(
-                                Utils.from_unix_epoch_time_secs(
-                                    Utils.to_unix_epoch_time_secs(
-                                        Utils.iso_to_datetime("2014-12-10T19:09:34.000Z"))))
+    round_tripped_datetime = utils.datetime_to_iso(
+                                utils.from_unix_epoch_time_secs(
+                                    utils.to_unix_epoch_time_secs(
+                                        utils.iso_to_datetime("2014-12-10T19:09:34.000Z"))))
     println(round_tripped_datetime)
     @fact round_tripped_datetime --> "2014-12-10T19:09:34.000Z"
 
-    round_tripped_datetime = Utils.datetime_to_iso(
-                                Utils.from_unix_epoch_time_secs(
-                                    Utils.to_unix_epoch_time_secs(
-                                        Utils.iso_to_datetime("1969-04-28T23:48:34.123Z"))))
+    round_tripped_datetime = utils.datetime_to_iso(
+                                utils.from_unix_epoch_time_secs(
+                                    utils.to_unix_epoch_time_secs(
+                                        utils.iso_to_datetime("1969-04-28T23:48:34.123Z"))))
     println(round_tripped_datetime)
     @fact round_tripped_datetime --> "1969-04-28T23:48:34.123Z"
 
     ## check that rounding to milliseconds works
-    round_tripped_datetime = Utils.datetime_to_iso(
-                                Utils.from_unix_epoch_time_secs(
-                                    Utils.to_unix_epoch_time_secs(
-                                        Utils.iso_to_datetime("1969-04-28T23:48:34.999499Z"))))
+    round_tripped_datetime = utils.datetime_to_iso(
+                                utils.from_unix_epoch_time_secs(
+                                    utils.to_unix_epoch_time_secs(
+                                        utils.iso_to_datetime("1969-04-28T23:48:34.999499Z"))))
     println(round_tripped_datetime)
     @fact round_tripped_datetime --> "1969-04-28T23:48:34.999Z"
 
     ## check that rounding to milliseconds works
-    round_tripped_datetime = Utils.datetime_to_iso(
-                                Utils.from_unix_epoch_time_secs(
-                                    Utils.to_unix_epoch_time_secs(
-                                        Utils.iso_to_datetime("1969-04-27T23:59:59.999999Z"))))
+    round_tripped_datetime = utils.datetime_to_iso(
+                                utils.from_unix_epoch_time_secs(
+                                    utils.to_unix_epoch_time_secs(
+                                        utils.iso_to_datetime("1969-04-27T23:59:59.999999Z"))))
     println(round_tripped_datetime)
     @fact round_tripped_datetime --> "1969-04-28T00:00:00.000Z" "This fails due to PyCall conversion error"
 end

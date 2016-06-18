@@ -1,8 +1,44 @@
-module Utils
+module utils
 
 
 import SynapseClient: @utilfunction, @standalonefunction, synapsecall, synapseclient
 
+
+export 
+	as_url, 
+	datetime_to_iso, 
+	download_file, 
+	equal_paths, 
+	extract_filename, 
+	extract_prefix, 
+	extract_user_name, 
+	file_url_to_path, 
+	find_data_file_handle, 
+	format_time_interval, 
+	from_unix_epoch_time, 
+	from_unix_epoch_time_secs, 
+	get_properties, 
+	guess_file_name, 
+	id_of, 
+	is_in_path, 
+	is_same_base_url, 
+	is_synapse_id, 
+	is_url, 
+	iso_to_datetime, 
+	# itersubclasses,
+	make_bogus_binary_file, 
+	make_bogus_data_file, 
+	md5_for_file, 
+	normalize_lines, 
+	normalize_path, 
+	normalize_whitespace, 
+	printTransferProgress, 
+	query_limit_and_offset, 
+	threadsafe_generator, 
+	to_unix_epoch_time, 
+	to_unix_epoch_time_secs, 
+	touch, 
+	unique_filename
 
 @utilfunction as_url
 @utilfunction datetime_to_iso
@@ -33,7 +69,7 @@ import SynapseClient: @utilfunction, @standalonefunction, synapsecall, synapsecl
 @utilfunction normalize_whitespace
 @utilfunction printTransferProgress
 @utilfunction query_limit_and_offset
-#@utilfunction threadsafe_generator
+@utilfunction threadsafe_generator
 @utilfunction to_unix_epoch_time
 @utilfunction to_unix_epoch_time_secs
 @utilfunction touch

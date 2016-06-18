@@ -27,16 +27,16 @@ function wrappythonobject(po::PyObject)
 		pyisinstance(po, synapseclient.Link)    && return Link(po)
 		pyisinstance(po, synapseclient.Schema)  && return Schema(po)
 		return Entity(po)
-	elseif pyisinstance(po, dict_object.DictObject)
+	elseif pyisinstance(po, pydict_object.DictObject)
 		pyisinstance(po, synapseclient.Evaluation) && return Evaluation(po)
 		pyisinstance(po, synapseclient.Wiki)       && return Wiki(po)
 		pyisinstance(po, synapseclient.Team)       && return Team(po)
 		return DictObject(po) # IMPORTANT - this will make sure the internal dictionaries are modified in-place and not copied
 	end
 	# Activity and Annotations inherit from dict, not DictObject
-	pyisinstance(po, synapseclient.Activity)  && return Activity(po)
-	pyisinstance(po, annotations.Annotations) && return Annotations(po)
-	pyisinstance(po, client.Synapse)          && return Synapse(po)
+	pyisinstance(po, synapseclient.Activity)    && return Activity(po)
+	pyisinstance(po, pyannotations.Annotations) && return Annotations(po)
+	pyisinstance(po, pyclient.Synapse)            && return Synapse(po)
 
 	# IMPORTANT: do not convert python dicts because that will make a copy
 	pyisinstance(po, pybuiltin(:dict)) && return PyDict(po)
