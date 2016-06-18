@@ -31,15 +31,15 @@ facts("Entity") do
         if i == 1
             e = create(Entity,e)
         end    
-        @fact e[:parentId] --> "syn1234"
+        @fact e["parentId"] --> "syn1234"
 
 
-        @fact e[:properties][:parentId] -->"syn1234"
+        @fact e["properties"]["parentId"] -->"syn1234"
 
-        @fact e[:foo] --> 123
+        @fact e["foo"] --> 123
 
 
-        @fact e[:annotations][:foo] --> 123
+        @fact e["annotations"]["foo"] --> 123
 
         @fact haskey(e, "parentId") --> true
         @fact haskey(e, "foo") --> true
@@ -50,47 +50,47 @@ facts("Entity") do
         # called "annotations". Because annotations are open-ended, we
         # might even have an annotations called "annotations", which gets
         # really confusing.
-        @fact typeof(e[:annotations]) <: Associative --> true
+        @fact typeof(e["annotations"]) <: Associative --> true
         
 
-        @fact e[:properties][:annotations] --> "/repo/v1/entity/syn1234/annotations"
-        @fact e[:annotations][:annotations] --> "How confusing!"
+        @fact e["properties"]["annotations"] --> "/repo/v1/entity/syn1234/annotations"
+        @fact e["annotations"]["annotations"] --> "How confusing!"
 
-        @fact e[:nerds] --> ["chris","jen","janey"]
-        @fact all(k->haskey(e,k), [:name, :description, :foo, :nerds, :annotations, :md5, :parentId]) --> true
+        @fact e["nerds"] --> ["chris","jen","janey"]
+        @fact all(k->haskey(e,k), ["name", "description", "foo", "nerds", "annotations", "md5", "parentId"]) --> true
         
         # Test modifying properties
-        e[:description] = "Working, so far"
-        @fact e[:description] --> "Working, so far"
-        e[:description] = "Wiz-bang flapdoodle"
-        @fact e[:description] --> "Wiz-bang flapdoodle"
+        e["description"] = "Working, so far"
+        @fact e["description"] --> "Working, so far"
+        e["description"] = "Wiz-bang flapdoodle"
+        @fact e["description"] --> "Wiz-bang flapdoodle"
 
         # Test modifying annotations
-        e[:foo] = 999
-        @fact e[:annotations][:foo] --> 999
-        e[:foo] = 12345
-        @fact e[:annotations][:foo] --> 12345
+        e["foo"] = 999
+        @fact e["annotations"]["foo"] --> 999
+        e["foo"] = 12345
+        @fact e["annotations"]["foo"] --> 12345
 
         # Test creating a new annotation
-        e[:bar] = 888
-        @fact e[:annotations][:bar] --> 888
-        e[:bat] = 7788
-        @fact e[:annotations][:bat] --> 7788
+        e["bar"] = 888
+        @fact e["annotations"]["bar"] --> 888
+        e["bat"] = 7788
+        @fact e["annotations"]["bat"] --> 7788
 
         # # Test replacing annotations object
-        e[:annotations] = Dict("splat"=>"a totally new set of annotations", "foo"=>456)
-        @fact e[:foo] --> 456
+        e["annotations"] = Dict("splat"=>"a totally new set of annotations", "foo"=>456)
+        @fact e["foo"] --> 456
 
-        @fact typeof(e[:annotations]) <: Associative --> true
+        @fact typeof(e["annotations"]) <: Associative --> true
 
-        @fact e[:annotations][:foo] --> 456
+        @fact e["annotations"]["foo"] --> 456
 
-        @fact e[:properties][:annotations] --> "/repo/v1/entity/syn1234/annotations"
+        @fact e["properties"]["annotations"] --> "/repo/v1/entity/syn1234/annotations"
 
         ## test unicode properties
-        e[:train] = "時刻表には記載されない　月への列車が来ると聞いて"
-        e[:band] = "Motörhead"
-        e[:lunch] = "すし"
+        e["train"] = "時刻表には記載されない　月への列車が来ると聞いて"
+        e["band"] = "Motörhead"
+        e["lunch"] = "すし"
 
 
         println(e)
@@ -127,10 +127,10 @@ facts("entity_creation") do
     annos = Dict("testing"=>123)
     folder = create(Entity, props, annos)
 
-    @fact folder[:concreteType] --> "org.sagebionetworks.repo.model.Folder"
+    @fact folder["concreteType"] --> "org.sagebionetworks.repo.model.Folder"
     @fact typeof(folder) --> Folder
-    @fact folder[:name] --> "Testing123"
-    @fact folder[:testing] --> 123
+    @fact folder["name"] --> "Testing123"
+    @fact folder["testing"] --> 123
 
     ## In case of unknown concreteType, fall back on generic Entity object
     props = Dict(
@@ -141,38 +141,38 @@ facts("entity_creation") do
     )
     whatsits = create(Entity,props)
 
-    @fact whatsits[:concreteType] --> "org.sagebionetworks.repo.model.DoesntExist"
+    @fact whatsits["concreteType"] --> "org.sagebionetworks.repo.model.DoesntExist"
     @fact typeof(whatsits) --> Entity
 end
 
 facts("parent_id_required") do
     xkcd1 = File("http://xkcd.com/1343/", name="XKCD: Manuals", parent="syn1000001", synapseStore=false)
-    @fact xkcd1[:parentId] --> "syn1000001"
+    @fact xkcd1["parentId"] --> "syn1000001"
 
     xkcd2 = File("http://xkcd.com/1343/", name="XKCD: Manuals", parentId="syn1000002", synapseStore=false)
-    @fact xkcd2[:parentId] --> "syn1000002"
+    @fact xkcd2["parentId"] --> "syn1000002"
 
     @fact_pythrows SynapseMalformedEntityError File("http://xkcd.com/1343/", name="XKCD: Manuals", synapseStore=false)
 end
 
 facts("entity_constructors") do
     project = Project("TestProject", id="syn1001", foo="bar")
-    @fact project[:name] --> "TestProject"
-    @fact project[:foo] --> "bar"
+    @fact project["name"] --> "TestProject"
+    @fact project["foo"] --> "bar"
 
     folder = Folder("MyFolder", parent=project, foo="bat", id="syn1002")
-    @fact folder[:name] --> "MyFolder"
-    @fact folder[:foo] --> "bat"
-    @fact folder[:parentId] --> "syn1001"
+    @fact folder["name"] --> "MyFolder"
+    @fact folder["foo"] --> "bat"
+    @fact folder["parentId"] --> "syn1001"
 
     a_file = File("/path/to/fabulous_things.zzz", parent=folder, foo="biz", contentType="application/cattywampus")
     #@fact a_file.name --> "fabulous_things.zzz"
-    @fact a_file[:concreteType] --> "org.sagebionetworks.repo.model.FileEntity"
-    @fact a_file[:path] --> "/path/to/fabulous_things.zzz"
-    @fact a_file[:foo] --> "biz"
-    @fact a_file[:parentId] --> "syn1002"
-    @fact a_file[:contentType] --> "application/cattywampus"
-    @fact "contentType" in keys(a_file[:__dict__]) --> true
+    @fact a_file["concreteType"] --> "org.sagebionetworks.repo.model.FileEntity"
+    @fact a_file["path"] --> "/path/to/fabulous_things.zzz"
+    @fact a_file["foo"] --> "biz"
+    @fact a_file["parentId"] --> "syn1002"
+    @fact a_file["contentType"] --> "application/cattywampus"
+    @fact "contentType" in keys(a_file["__dict__"]) --> true
 end
 
 facts("property_keys") do
@@ -236,16 +236,16 @@ facts("split_entity_namespaces") do
     @fact local_state["cacheDir"] --> "/foo/bar/bat"
 
     f = create(Entity,properties,annotations,local_state)
-    @fact f[:properties][:dataFileHandleId] --> 54321
-    @fact f[:properties][:name] --> "Henry"
-    @fact f[:annotations][:foo] --> 1234
-    @fact f[:__dict__]["cacheDir"] --> "/foo/bar/bat"
-    @fact f[:__dict__]["path"] --> "/foo/bar/bat/foo.xyz"
+    @fact f["properties"]["dataFileHandleId"] --> 54321
+    @fact f["properties"]["name"] --> "Henry"
+    @fact f["annotations"]["foo"] --> 1234
+    @fact f["__dict__"]["cacheDir"] --> "/foo/bar/bat"
+    @fact f["__dict__"]["path"] --> "/foo/bar/bat/foo.xyz"
 end
 
 facts("concrete_type") do
     f1 = File("http://en.wikipedia.org/wiki/File:Nettlebed_cave.jpg", name="Nettlebed Cave", parent="syn1234567", synapseStore=false)
-    @fact f1[:concreteType] --> "org.sagebionetworks.repo.model.FileEntity"
+    @fact f1["concreteType"] --> "org.sagebionetworks.repo.model.FileEntity"
 end
 
 facts("is_container") do

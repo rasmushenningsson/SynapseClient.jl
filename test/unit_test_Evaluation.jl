@@ -12,9 +12,9 @@ facts("Evaluation") do
 
     #Assert that the values are 
     ev = Evaluation(name="foobar2", description="bar", status="OPEN", contentSource="syn1234")
-    @fact ev[:name] --> "foobar2"
-    @fact ev[:description] --> "bar"
-    @fact ev[:status] --> "OPEN"
+    @fact ev["name"] --> "foobar2"
+    @fact ev["description"] --> "bar"
+    @fact ev["status"] --> "OPEN"
 end
 
 facts("Submission") do

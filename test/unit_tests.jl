@@ -29,10 +29,10 @@ facts("activity_creation_from_dict") do
 			 "description"=>"hipster beard dataset",
 			 "used"=>[ Dict("reference"=>Dict("targetId"=>"syn12345", "versionNumber"=>42), "wasExecuted"=>true) ])
 	a = Activity(data=d)
-	@fact a[:name] --> "Project Fuzz"
-	@fact a[:description] --> "hipster beard dataset"
+	@fact a["name"] --> "Project Fuzz"
+	@fact a["description"] --> "hipster beard dataset"
 
-	usedEntities = a[:used]
+	usedEntities = a["used"]
 	@fact length(usedEntities) --> 1
 
 	u = usedEntities[1]
@@ -47,11 +47,11 @@ facts("activity_used_execute_methods") do
 	a = Activity(name="Fuzz", description="hipster beard dataset")
 	used(a,Dict("id"=>"syn101", "versionNumber"=>42, "concreteType"=> "org.sagebionetworks.repo.model.FileEntity"))
 	executed(a,"syn102", targetVersion=1)
-	usedEntities = a[:used]
+	usedEntities = a["used"]
 	@fact length(usedEntities) --> 2
 
-	@fact a[:name] --> "Fuzz"
-	@fact a[:description] --> "hipster beard dataset"
+	@fact a["name"] --> "Fuzz"
+	@fact a["description"] --> "hipster beard dataset"
 
 	## ??? are activities supposed to come back in order? Let"s not count on it
 	used_syn101 = _find_used(a, res -> res["reference"]["targetId"] == "syn101")

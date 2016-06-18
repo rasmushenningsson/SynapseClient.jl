@@ -27,9 +27,9 @@ facts("annotations") do
     a = Dict("foo"=>"bar", "zoo"=>["zing","zaboo"], "species"=>"Platypus")
     sa = to_synapse_annotations(a)
     # print(sa)
-    @fact sa[:stringAnnotations]["foo"] --> ["bar"]
-    @fact sa[:stringAnnotations]["zoo"] --> ["zing","zaboo"]
-    @fact sa[:stringAnnotations]["species"] --> ["Platypus"]
+    @fact sa["stringAnnotations"]["foo"] --> ["bar"]
+    @fact sa["stringAnnotations"]["zoo"] --> ["zing","zaboo"]
+    @fact sa["stringAnnotations"]["species"] --> ["Platypus"]
 end
 
 facts("annotation_name_collision") do
@@ -38,17 +38,17 @@ facts("annotation_name_collision") do
 
     ## order is important: to repro the erro, the key uri has to come before stringAnnotations
     sa = collections.OrderedDict()
-    sa[:uri] = "/entity/syn47396/annotations"
-    sa[:doubleAnnotations] = Dict()
-    sa[:longAnnotations] = Dict()
-    sa[:stringAnnotations] = Dict(
+    sa["uri"] = "/entity/syn47396/annotations"
+    sa["doubleAnnotations"] = Dict()
+    sa["longAnnotations"] = Dict()
+    sa["stringAnnotations"] = Dict(
             "tissueType"=> ["Blood"],
             "uri"=> ["/repo/v1/dataset/47396"])
-    sa[:creationDate] = "1321168909232"
-    sa[:id] = "syn47396"
+    sa["creationDate"] = "1321168909232"
+    sa["id"] = "syn47396"
 
     a = from_synapse_annotations(sa)
-    @fact a[:tissueType] --> ["Blood"]
+    @fact a["tissueType"] --> ["Blood"]
 ##    assert a["uri"] == u"/entity/syn47396/annotations"
 end
 
@@ -63,11 +63,11 @@ facts("more_annotations") do
              "test_mo_booleans"=>[false, true, true, false])
     sa = to_synapse_annotations(a)
     println(sa)
-    @fact sa[:longAnnotations]["foo"] --> [1234]
-    @fact sa[:doubleAnnotations]["zoo"] --> [123.1, 456.2, 789.3]
-    @fact sa[:stringAnnotations]["species"] --> ["Platypus"]
-    @fact sa[:stringAnnotations]["test_boolean"] --> ["true"]
-    @fact sa[:stringAnnotations]["test_mo_booleans"] --> ["False", "True", "True", "False"]
+    @fact sa["longAnnotations"]["foo"] --> [1234]
+    @fact sa["doubleAnnotations"]["zoo"] --> [123.1, 456.2, 789.3]
+    @fact sa["stringAnnotations"]["species"] --> ["Platypus"]
+    @fact sa["stringAnnotations"]["test_boolean"] --> ["true"]
+    @fact sa["stringAnnotations"]["test_mo_booleans"] --> ["False", "True", "True", "False"]
 
     ## this part of the test is kinda fragile. It it breaks again, it should be removed
     bdays = [Utils.from_unix_epoch_time(t) for t in sa["dateAnnotations"]["birthdays"]]
@@ -76,7 +76,7 @@ end
 facts("annotations_unicode") do
     a = Dict("files"=>["tmp6y5tVr.txt"], "cacheDir"=>"/Users/chris/.synapseCache/python/syn1809087", "foo"=>1266)
     sa = to_synapse_annotations(a)
-    @fact sa[:stringAnnotations]["cacheDir"] --> ["/Users/chris/.synapseCache/python/syn1809087"]
+    @fact sa["stringAnnotations"]["cacheDir"] --> ["/Users/chris/.synapseCache/python/syn1809087"]
 end
 facts("round_trip_annotations") do
     # """Test that annotations can make the round trip from a simple dictionary

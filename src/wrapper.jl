@@ -129,10 +129,10 @@ convert(::Type{PyObject}, a::AbstractSynapseDict) = pythonobject(a)
 ==(x::AbstractSynapse, y::AbstractSynapse) = pythonobject(x)==pythonobject(y)
 ==(x::AbstractSynapseDict, y::AbstractSynapseDict) = pythonobject(x)==pythonobject(y)
 
-getindex(e::AbstractEntity, key::Symbol)              = wrappythonobject( pythonobject(e)[string(key)] )
-setindex!(e::AbstractEntity, value, key::Symbol)      = pythonobject(e)[string(key)] = value
-getindex(a::AbstractSynapseDict, key::Symbol)         = wrappythonobject( a.po[string(key)] )
-setindex!(a::AbstractSynapseDict, value, key::Symbol) = a.po[string(key)] = value
+getindex(e::AbstractEntity, key::AbstractString)              = wrappythonobject( pythonobject(e)[key] )
+setindex!(e::AbstractEntity, value, key::AbstractString)      = pythonobject(e)[key] = value
+getindex(a::AbstractSynapseDict, key::AbstractString)         = wrappythonobject( a.po[key] )
+setindex!(a::AbstractSynapseDict, value, key::AbstractString) = a.po[key] = value
 
 
 hasattr = pybuiltin(:hasattr)
