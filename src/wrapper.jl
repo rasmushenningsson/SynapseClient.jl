@@ -131,15 +131,15 @@ convert(::Type{PyObject}, a::AbstractSynapseDict) = convert(PyObject,unwrap(a))
 ==(x::AbstractSynapse, y::AbstractSynapse) = unwrap(x)==unwrap(y)
 ==(x::AbstractSynapseDict, y::AbstractSynapseDict) = unwrap(x)==unwrap(y)
 
-getindex(e::AbstractEntity, key::AbstractString)              = wrap( unwrap(e)[key] )
-setindex!(e::AbstractEntity, value, key::AbstractString)      = unwrap(e)[key] = value
+getindex(e::AbstractSynapse, key::AbstractString)              = wrap( unwrap(e)[key] )
+setindex!(e::AbstractSynapse, value, key::AbstractString)      = unwrap(e)[key] = value
 # getindex(a::AbstractSynapseDict, key::AbstractString)         = wrap( unwrap(a)[key] )
 getindex(a::AbstractSynapseDict, key::AbstractString)         = wrap( get(unwrap(a).o,Any,key) )
 setindex!(a::AbstractSynapseDict, value, key::AbstractString) = unwrap(a)[key] = value
 
 
 hasattr = pybuiltin(:hasattr)
-haskey(e::AbstractEntity, key)      = synapsecall(hasattr, e, key)
+haskey(e::AbstractSynapse, key)      = synapsecall(hasattr, e, key)
 haskey(d::AbstractSynapseDict, key) = haskey(unwrap(d), key)
 
 
