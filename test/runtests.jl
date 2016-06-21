@@ -35,9 +35,9 @@ end
 
 
 
-include("unit_tests.jl")
-include("unit_test_annotations.jl")
-include("unit_test_Entity.jl")
-include("unit_test_Evaluation.jl")
-include("unit_test_Wiki.jl")
-include("unit_test_DictObject.jl")
+include("unit/unit_tests.jl")
+include("unit/unit_test_annotations.jl")
+include("unit/unit_test_Entity.jl")
+include("unit/unit_test_Evaluation.jl")
+include("unit/unit_test_Wiki.jl")
+include("unit/unit_test_DictObject.jl")
