@@ -1,3 +1,5 @@
+module SynapseClientTests
+
 using SynapseClient, PyCall
 using FactCheck
 import SynapseClient: utils, Activity, Folder, File, Project, Evaluation, Submission, DictObject
@@ -35,9 +37,8 @@ end
 
 
 
-include("unit/unit_tests.jl")
-include("unit/unit_test_annotations.jl")
-include("unit/unit_test_Entity.jl")
-include("unit/unit_test_Evaluation.jl")
-include("unit/unit_test_Wiki.jl")
-include("unit/unit_test_DictObject.jl")
+include("unit/run_unit_tests.jl")
+
+
+FactCheck.exitstatus()
+end
