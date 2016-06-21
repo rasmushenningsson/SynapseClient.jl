@@ -9,17 +9,18 @@ abstract AbstractEntity <: AbstractSynapse
 abstract AbstractSynapseDict <: Associative{Any,Any} # Would have preferred multiple inheritance. Use traits?
 
 # utility function for making sure AbstractSynapse objects are passed as PyObjects to python
-pythonobject(a::Any) = a # fallback
-pythonobject(a::AbstractSynapse) = a.po # unwrap
-pythonobject(a::AbstractSynapseDict) = PyObject(a.po) # unwrap
+unwrap(a::Any) = a # fallback
+unwrap(a::AbstractSynapse) = a.po
+unwrap(a::AbstractSynapseDict) = a.po
 
-pythonobjecttuple(a::Any) = a # fallback
-pythonobjecttuple(t::Tuple{Symbol,AbstractSynapse}) = (t[1],t[2].po) # unwrap for keyword arguments
-pythonobjecttuple(t::Tuple{Symbol,AbstractSynapseDict}) = (t[1],PyObject(t[2].po)) # unwrap for keyword arguments
+# unwrap for keyword arguments
+unwraptuple(t::Tuple{Symbol,Any}) = t # fallback
+unwraptuple(t::Tuple{Symbol,AbstractSynapse}) = (t[1],t[2].po)
+unwraptuple(t::Tuple{Symbol,AbstractSynapseDict}) = (t[1],t[2].po)
 
-# wrappythonobject is more or less the inverse of pythonobject()
-wrappythonobject(x::Any) = x # fallback
-function wrappythonobject(po::PyObject)
+# wrap is more or less the inverse of unwrap()
+wrap(x::Any) = x # fallback
+function wrap(po::PyObject)
 	if pyisinstance(po, synapseclient.Entity)
 		pyisinstance(po, synapseclient.Project) && return Project(po)
 		pyisinstance(po, synapseclient.Folder)  && return Folder(po)
@@ -51,20 +52,21 @@ end
 
 
 
-# return type conversion is done by wrappythonobject, since PyCall conversion is a bit too eager to convert classes to pure dicts
+# return type conversion is done by wrap, since PyCall conversion is a bit too eager to convert classes to pure dicts
 # function synapsecall(obj::PyObject,method::Symbol,args...;kwargs...)
-# 	wrappythonobject(pycall(obj[method], PyObject, 
-# 	                        map(pythonobject,args)...; 
-# 	                        map(pythonobjecttuple,kwargs)...))
+# 	wrap(pycall(obj[method], PyObject, 
+# 	                        map(unwrap,args)...; 
+# 	                        map(unwraptuple,kwargs)...))
 # end
 function synapsecall(func::PyObject,args...;kwargs...)
-	wrappythonobject(pycall(func, PyObject, 
-	                        map(pythonobject,args)...; 
-	                        map(pythonobjecttuple,kwargs)...))
+	wrap(pycall(func, PyObject, 
+	                        map(unwrap,args)...; 
+	                        map(unwraptuple,kwargs)...))
 end
 synapsecall(obj::PyObject,method::Symbol,args...;kwargs...) = synapsecall(obj[method],args...;kwargs...)
-synapsecall(obj::AbstractSynapse,method::Symbol,args...;kwargs...) = synapsecall(pythonobject(obj),method,args...;kwargs...)
-synapsecall(obj::AbstractSynapseDict,method::Symbol,args...;kwargs...) = synapsecall(pythonobject(obj),method,args...;kwargs...)
+synapsecall(obj::AbstractSynapse,method::Symbol,args...;kwargs...) = synapsecall(unwrap(obj),method,args...;kwargs...)
+# synapsecall(obj::AbstractSynapseDict,method::Symbol,args...;kwargs...) = synapsecall(unwrap(obj),method,args...;kwargs...)
+synapsecall(obj::AbstractSynapseDict,method::Symbol,args...;kwargs...) = synapsecall(convert(PyObject,obj),method,args...;kwargs...)
 #utilcall(method::Symbol,args...;kwargs...) = synapsecall(synapseclient.utils,method,args...;kwargs...)
 
 lowercasesymbol(s::Symbol) = Symbol(lowercase(string(s)))
@@ -124,20 +126,21 @@ end
 
 
 
-convert(::Type{PyObject}, a::AbstractSynapse) = pythonobject(a)
-convert(::Type{PyObject}, a::AbstractSynapseDict) = pythonobject(a)
-==(x::AbstractSynapse, y::AbstractSynapse) = pythonobject(x)==pythonobject(y)
-==(x::AbstractSynapseDict, y::AbstractSynapseDict) = pythonobject(x)==pythonobject(y)
+convert(::Type{PyObject}, a::AbstractSynapse) = unwrap(a)
+convert(::Type{PyObject}, a::AbstractSynapseDict) = convert(PyObject,unwrap(a))
+==(x::AbstractSynapse, y::AbstractSynapse) = unwrap(x)==unwrap(y)
+==(x::AbstractSynapseDict, y::AbstractSynapseDict) = unwrap(x)==unwrap(y)
 
-getindex(e::AbstractEntity, key::AbstractString)              = wrappythonobject( pythonobject(e)[key] )
-setindex!(e::AbstractEntity, value, key::AbstractString)      = pythonobject(e)[key] = value
-getindex(a::AbstractSynapseDict, key::AbstractString)         = wrappythonobject( a.po[key] )
-setindex!(a::AbstractSynapseDict, value, key::AbstractString) = a.po[key] = value
+getindex(e::AbstractEntity, key::AbstractString)              = wrap( unwrap(e)[key] )
+setindex!(e::AbstractEntity, value, key::AbstractString)      = unwrap(e)[key] = value
+# getindex(a::AbstractSynapseDict, key::AbstractString)         = wrap( unwrap(a)[key] )
+getindex(a::AbstractSynapseDict, key::AbstractString)         = wrap( get(unwrap(a).o,Any,key) )
+setindex!(a::AbstractSynapseDict, value, key::AbstractString) = unwrap(a)[key] = value
 
 
 hasattr = pybuiltin(:hasattr)
 haskey(e::AbstractEntity, key)      = synapsecall(hasattr, e, key)
-haskey(d::AbstractSynapseDict, key) = haskey(pythonobject(d), key)
+haskey(d::AbstractSynapseDict, key) = haskey(unwrap(d), key)
 
 
 length(a::AbstractSynapseDict) = length(a.po)
