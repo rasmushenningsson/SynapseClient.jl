@@ -5,7 +5,7 @@ login(args...;kwargs...) = Synapse(synapseclient.login(args...;kwargs...))
 check_for_updates(args...;kwargs...) = synapseclient.check_for_updates(args...;kwargs...)
 release_notes(args...;kwargs...) = synapseclient.release_notes(args...;kwargs...)
 
-# NB: Functions that are deprecated in python API are not introduced here
+# NB: Public API
 @synapsefunction Synapse chunkedQuery
 @synapsefunction Synapse delete
 @synapsefunction Synapse deleteProvenance
@@ -52,6 +52,13 @@ release_notes(args...;kwargs...) = synapseclient.release_notes(args...;kwargs...
 @synapsefunction Synapse updateActivity
 @synapsefunction Synapse uploadFile
 
+# deprecated in python version, were never exported by SynapseClient.jl
+@synapsefunction Synapse query
+@synapsefunction Synapse downloadEntity
+@synapsefunction Synapse createEntity
+@synapsefunction Synapse getEntity
+@synapsefunction Synapse updateEntity
+
 # not exported
 @synapsefunction Synapse _list
-@synapsefunction Synapse query
+@synapsefunction Synapse _findteam

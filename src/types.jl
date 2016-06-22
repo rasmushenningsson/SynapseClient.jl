@@ -17,5 +17,7 @@ import Base: getindex
 
 create(::Type{Entity},args...;kwargs...) = synapsecall(synapseclient.Entity,:create,args...;kwargs...)
 
+@synapsefunction AbstractEntity local_state
+
 @synapsefunction Activity used
 @synapsefunction Activity executed

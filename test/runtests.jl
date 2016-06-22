@@ -2,7 +2,9 @@ module SynapseClientTests
 
 using SynapseClient, PyCall
 using FactCheck
-import SynapseClient: utils, Activity, Folder, File, Project, Evaluation, Submission, DictObject
+import SynapseClient: utils, 
+                      AbstractEntity, AbstractSynapse, AbstractSynapseDict, 
+                      Activity, Folder, File, Project, Evaluation, Submission, DictObject
 
 ValueError = pybuiltin(:ValueError)
 PyKeyError = pybuiltin(:KeyError)
@@ -37,7 +39,8 @@ end
 
 
 
-include("unit/run_unit_tests.jl")
+# include("unit/run_unit_tests.jl")
+include("integration/run_integration_tests.jl")
 
 
 FactCheck.exitstatus()
