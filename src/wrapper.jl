@@ -36,8 +36,8 @@ function wrap(po::PyObject)
 	end
 	# Activity and Annotations inherit from dict, not DictObject
 	pyisinstance(po, synapseclient.Activity)    && return Activity(po)
-	pyisinstance(po, pyannotations.Annotations) && return Annotations(po)
-	pyisinstance(po, pyclient.Synapse)            && return Synapse(po)
+	pyisinstance(po, pyannotations.Annotations) && return annotations.Annotations(po)
+	pyisinstance(po, pyclient.Synapse)          && return Synapse(po)
 
 	# IMPORTANT: do not convert python dicts because that will make a copy
 	pyisinstance(po, pybuiltin(:dict)) && return PyDict(po)
