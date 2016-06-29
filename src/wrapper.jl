@@ -102,7 +102,8 @@ end
 
 
 macro createtype(name, super, wrappedClass, storageClass, doAssert)
-	assert = doAssert ? :(@assert pytypeof(po)==$wrappedClass) : (:;)
+	# assert = doAssert ? :(@assert pytypeof(po)==$wrappedClass) : (:;) # require exact match
+	assert = doAssert ? :(@assert pyisinstance(po,$wrappedClass)) : (:;) # require only that it is a subtype
 
 	esc(quote
 		immutable $name <: $super
