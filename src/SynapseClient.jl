@@ -5,6 +5,7 @@ using PyCall
 @pyimport synapseclient.client as pyclient
 @pyimport synapseclient.annotations as pyannotations
 @pyimport synapseclient.dict_object as pydict_object
+@pyimport synapseclient.cache as pycache
 
 import Base: get
 
@@ -71,5 +72,6 @@ include("synapse.jl")
 include("utils.jl")
 include("entity.jl")
 include("annotations.jl")
+include("cache.jl")
 
 end

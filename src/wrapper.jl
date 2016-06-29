@@ -38,6 +38,7 @@ function wrap(po::PyObject)
 	pyisinstance(po, synapseclient.Activity)    && return Activity(po)
 	pyisinstance(po, pyannotations.Annotations) && return annotations.Annotations(po)
 	pyisinstance(po, pyclient.Synapse)          && return Synapse(po)
+	pyisinstance(po, pycache.Cache)             && return cache.Cache(po)
 
 	# IMPORTANT: do not convert python dicts because that will make a copy
 	pyisinstance(po, pybuiltin(:dict)) && return PyDict(po)
@@ -93,6 +94,9 @@ macro entityfunction(name)
 end
 macro annotationsfunction(name)
 	esc(:( @standalonefunction(synapseclient.annotations, $name) ))
+end
+macro cachefunction(name)
+	esc(:( @standalonefunction(synapseclient.cache, $name) ))
 end
 
 
