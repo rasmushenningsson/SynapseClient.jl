@@ -58,7 +58,6 @@ try
     
 #catch ex
 finally
-	println("Finally!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 	cleanup(_to_cleanup)
 end
 
