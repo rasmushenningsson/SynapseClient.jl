@@ -4,7 +4,7 @@ using SynapseClient, PyCall
 using FactCheck
 import SynapseClient: utils, 
                       AbstractEntity, AbstractSynapse, AbstractSynapseDict, 
-                      Activity, Folder, File, Project, Evaluation, Submission, DictObject
+                      Activity, Folder, File, Project, Evaluation, Submission, DictObject, Team
 
 ValueError = pybuiltin(:ValueError)
 PyKeyError = pybuiltin(:KeyError)
@@ -19,21 +19,21 @@ PyFile = SynapseClient.synapseclient.File
 
 
 macro catchpyerror(expr)
-	quote
+	esc(quote
 		begin
 			err = Void()
 			try
-				$(esc(expr))
+				$expr
 			catch e
 				typeof(e) == PyCall.PyError || rethrow(e)
 				err=e.T
 			end
 			err
 		end
-	end
+	end)
 end
 macro fact_pythrows( exception, expr )
-	:(@fact @catchpyerror($expr) --> $exception)
+	esc(:(@fact @catchpyerror($expr) --> $exception))
 end
 
 

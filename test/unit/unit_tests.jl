@@ -153,7 +153,7 @@ end
 facts("windows_file_urls") do
 	url = "file:///c:/WINDOWS/clock.avi"
 	@fact utils.is_url(url) --> true
-	@fact utils.file_url_to_path(url, verify_exists=false)["path"] == "c:/WINDOWS/clock.avi" --> true utils.file_url_to_path(url)
+	@fact utils.file_url_to_path(url, verify_exists=false) == "c:/WINDOWS/clock.avi" --> true utils.file_url_to_path(url)
 end
 
 facts("is_in_path") do
@@ -168,11 +168,11 @@ end
 facts("id_of") do
     @fact utils.id_of(1) --> "1"
     @fact utils.id_of("syn12345") --> "syn12345"
-    @fact utils.id_of(Dict("foo"=>1, "id"=>123)) --> 123
+    @fact utils.id_of(Dict("foo"=>1, "id"=>123)) --> "123"
     @fact_pythrows ValueError utils.id_of(Dict("foo"=>1, "idzz"=>123))
-    @fact utils.id_of(Dict("properties"=>Dict("id"=>123))) --> 123
+    @fact utils.id_of(Dict("properties"=>Dict("id"=>123))) --> "123"
     @fact_pythrows ValueError utils.id_of(Dict("properties"=>Dict("qq"=>123)))
-    @fact_pythrows ValueError utils.id_of(pyeval("object()"))
+    @fact_pythrows ValueError utils.id_of(py"object()")
 
     # class Foo:
     #     def __init__(self, id):
@@ -257,7 +257,7 @@ end
 facts("utils_extract_user_name") do
     profile = Dict("firstName"=>"Madonna")
     @fact utils.extract_user_name(profile) --> "Madonna"
-    profile = Dict{ASCIIString,Any}("firstName"=>"Oscar", "lastName"=>"the Grouch")
+    profile = Dict{String,Any}("firstName"=>"Oscar", "lastName"=>"the Grouch")
     @fact utils.extract_user_name(profile) --> "Oscar the Grouch"
     profile["displayName"] = Void()
     @fact utils.extract_user_name(profile) --> "Oscar the Grouch"

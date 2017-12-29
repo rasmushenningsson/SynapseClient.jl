@@ -4,9 +4,9 @@ import Base: convert, ==, getindex, setindex!, haskey,
              sizehint!, keytype, valtype
 
 # AbstractSynapse is used for all PyObjects that are wrapped in a Julia type
-abstract AbstractSynapse
-abstract AbstractEntity <: AbstractSynapse
-abstract AbstractSynapseDict <: Associative{Any,Any} # Would have preferred multiple inheritance. Use traits?
+@compat abstract type AbstractSynapse end
+@compat abstract type AbstractEntity <: AbstractSynapse end
+@compat abstract type AbstractSynapseDict <: Associative{Any,Any} end # Would have preferred multiple inheritance. Use traits?
 
 # utility function for making sure AbstractSynapse objects are passed as PyObjects to python
 unwrap(a::Any) = a # fallback

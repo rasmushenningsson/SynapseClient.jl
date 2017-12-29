@@ -20,7 +20,7 @@ facts("DictObject") do
     #@fact d["nerds"]-->["chris","jen","janey"]
     @fact haskey(d,"qwerqwer") --> false
 
-    println(keys(d))
+    # println(keys(d))
     @fact all([key in keys(d) for key in ["args_working?", "a", "b", "nerds"]]) --> true
     println(d)
     d["new_key"] = "new value!"

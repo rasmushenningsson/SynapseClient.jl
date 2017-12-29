@@ -1,5 +1,6 @@
 module SynapseClient
 
+using Compat
 using PyCall
 @pyimport synapseclient
 @pyimport synapseclient.client as pyclient

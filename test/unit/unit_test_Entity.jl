@@ -172,7 +172,7 @@ facts("entity_constructors") do
     @fact a_file["foo"] --> "biz"
     @fact a_file["parentId"] --> "syn1002"
     @fact a_file["contentType"] --> "application/cattywampus"
-    @fact "contentType" in keys(a_file["__dict__"]) --> true
+    @fact "contentType" in keys(a_file["_file_handle"]) --> true
 end
 
 facts("property_keys") do
