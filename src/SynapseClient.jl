@@ -7,6 +7,7 @@ synapseInstalled = try
 	dummy = pyimport("synapseclient")
 	true
 catch e
+	@warn "Please install the pyton package \"synapseclient\"."
 	false
 end
 
