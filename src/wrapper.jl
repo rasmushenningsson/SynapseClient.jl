@@ -4,9 +4,9 @@ import Base: convert, ==, getindex, setindex!, haskey,
              sizehint!, keytype, valtype
 
 # AbstractSynapse is used for all PyObjects that are wrapped in a Julia type
-@compat abstract type AbstractSynapse end
-@compat abstract type AbstractEntity <: AbstractSynapse end
-@compat abstract type AbstractSynapseDict <: Associative{Any,Any} end # Would have preferred multiple inheritance. Use traits?
+abstract type AbstractSynapse end
+abstract type AbstractEntity <: AbstractSynapse end
+abstract type AbstractSynapseDict <: AbstractDict{Any,Any} end # Would have preferred multiple inheritance. Use traits?
 
 # utility function for making sure AbstractSynapse objects are passed as PyObjects to python
 unwrap(a::Any) = a # fallback
@@ -106,7 +106,7 @@ macro createtype(name, super, wrappedClass, storageClass, doAssert)
 	assert = doAssert ? :(@assert pyisinstance(po,$wrappedClass)) : (:;) # require only that it is a subtype
 
 	esc(quote
-		immutable $name <: $super
+		struct $name <: $super
 			po::$storageClass
 			function $name(po::Union{PyObject,$storageClass})
 				$assert
@@ -165,8 +165,8 @@ pop!(a::AbstractSynapseDict, key) = pop!(a.po,key)
 pop!(a::AbstractSynapseDict, key, default) = pop!(a.po,key,default)
 keys(a::AbstractSynapseDict) = keys(a.po)
 values(a::AbstractSynapseDict) = values(a.po)
-merge{T<:AbstractSynapseDict}(a::T, others...) = T(merge(a.po,others))
-merge!{T<:AbstractSynapseDict}(a::T, others...) = merge!(a.po,others)
+merge(a::T, others...) where {T<:AbstractSynapseDict} = T(merge(a.po,others))
+merge!(a::T, others...) where {T<:AbstractSynapseDict} = merge!(a.po,others)
 sizehint!(a::AbstractSynapseDict, n) = sizehint!(a.po,n)
 keytype(a::AbstractSynapseDict) = keytype(a.po)
 valtype(a::AbstractSynapseDict) = valuetype(a.po)

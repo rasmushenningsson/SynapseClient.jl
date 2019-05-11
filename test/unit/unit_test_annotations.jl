@@ -1,5 +1,5 @@
 #using DataStructures
-@pyimport collections
+collections = pyimport("collections") # @pyimport collections
 
 
 

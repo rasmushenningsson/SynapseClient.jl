@@ -1,23 +1,27 @@
 module SynapseClient
 
-using Compat
 using PyCall
 
 synapseInstalled = try
 	dummy = pyimport("synapseclient")
 	true
 catch e
-	@warn "Please install the pyton package \"synapseclient\"."
+	@warn "Please install the python package \"synapseclient\"."
 	false
 end
 
 
 if synapseInstalled
-	@pyimport synapseclient
-	@pyimport synapseclient.client as pyclient
-	@pyimport synapseclient.annotations as pyannotations
-	@pyimport synapseclient.dict_object as pydict_object
-	@pyimport synapseclient.cache as pycache
+	synapseclient = pyimport("synapseclient")
+	pyclient      = synapseclient.client
+	pyannotations = synapseclient.annotations
+	pydict_object = synapseclient.dict_object
+	pycache       = synapseclient.cache
+	# @pyimport synapseclient
+	# @pyimport synapseclient.client as pyclient
+	# @pyimport synapseclient.annotations as pyannotations
+	# @pyimport synapseclient.dict_object as pydict_object
+	# @pyimport synapseclient.cache as pycache
 
 	import Base: get
 

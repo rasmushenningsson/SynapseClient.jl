@@ -1,9 +1,11 @@
 module annotations
 
-using PyCall
-@pyimport synapseclient.annotations as pyannotations
-
 import SynapseClient: @annotationsfunction, @standalonefunction, @createtype, @dicttype, AbstractSynapseDict, synapsecall, synapseclient
+
+using PyCall
+# @pyimport synapseclient.annotations as pyannotations
+pyannotations = synapseclient.annotations
+
 
 
 export

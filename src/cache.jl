@@ -1,9 +1,11 @@
 module cache
 
-using PyCall
-@pyimport synapseclient.cache as pycache
-
 import SynapseClient: @cachefunction, @standalonefunction, @synapsefunction, @createtype, AbstractSynapse, synapsecall, synapseclient
+
+using PyCall
+# @pyimport synapseclient.cache as pycache
+pycache = synapseclient.cache
+
 
 
 export 
