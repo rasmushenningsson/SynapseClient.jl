@@ -1,11 +1,8 @@
 module cache
 
-import SynapseClient: @cachefunction, @standalonefunction, @synapsefunction, @createtype, AbstractSynapse, synapsecall, synapseclient
+import SynapseClient: @cachefunction, @standalonefunction, @synapsefunction, @createtype, AbstractSynapse, synapsecall, synapseclient, pycache
 
 using PyCall
-# @pyimport synapseclient.cache as pycache
-pycache = synapseclient.cache
-
 
 
 export 

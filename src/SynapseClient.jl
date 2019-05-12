@@ -2,93 +2,101 @@ module SynapseClient
 
 using PyCall
 
-synapseInstalled = try
-	dummy = pyimport("synapseclient")
-	true
-catch e
-	@warn "Please install the python package \"synapseclient\"."
-	false
+# synapseInstalled = try
+# 	dummy = pyimport("synapseclient")
+# 	true
+# catch e
+# 	@warn "Please install the python package \"synapseclient\"."
+# 	false
+# end
+
+
+const synapseclient = PyNULL()
+const pyclient = PyNULL()
+const pyannotations = PyNULL()
+const pydict_object = PyNULL()
+const pycache = PyNULL()
+
+
+function __init__()
+	try 
+		copy!(synapseclient, pyimport("synapseclient"))
+		copy!(pyclient,      synapseclient.client)
+		copy!(pyannotations, synapseclient.annotations)
+		copy!(pydict_object, synapseclient.dict_object)
+		copy!(pycache,       synapseclient.cache)
+		copy!(hasattr, pybuiltin(:hasattr))
+	catch
+		@warn "Please install the python package \"synapseclient\"."
+	end
 end
 
 
-if synapseInstalled
-	synapseclient = pyimport("synapseclient")
-	pyclient      = synapseclient.client
-	pyannotations = synapseclient.annotations
-	pydict_object = synapseclient.dict_object
-	pycache       = synapseclient.cache
-	# @pyimport synapseclient
-	# @pyimport synapseclient.client as pyclient
-	# @pyimport synapseclient.annotations as pyannotations
-	# @pyimport synapseclient.dict_object as pydict_object
-	# @pyimport synapseclient.cache as pycache
+import Base: get
 
-	import Base: get
+export
+	Synapse,
 
-	export
-		Synapse,
+	# SynapseClient
+	chunkedquery,
+	delete,
+	deleteprovenance,
+	downloadtablecolumns,
+	downloadtablefile,
+	#get, # NB: it makes more sense to extend Base.get since it is a dictionary lookup
+	getannotations,
+	getcolumn,
+	getcolumns,
+	getconfigfile,
+	getevaluation,
+	getevaluationbycontentsource,
+	getevaluationbyname,
+	getpermissions,
+	getprovenance,
+	getsubmission,
+	getsubmissionbundles,
+	getsubmissionstatus,
+	getsubmissions,
+	gettablecolumns,
+	getteam,
+	getteammembers,
+	getuserprofile,
+	getwiki,
+	getwikiheaders,
+	invalidateapikey,
+	login,
+	logout,
+	md5query,
+	onweb,
+	printentity,
+	restdelete,
+	restget,
+	restpost,
+	restput,
+	sendmessage,
+	setannotations,
+	setendpoints,
+	setpermissions,
+	setprovenance,
+	store,
+	submit,
+	tablequery,
+	updateactivity,
+	uploadfile,
 
-		# SynapseClient
-		chunkedquery,
-		delete,
-		deleteprovenance,
-		downloadtablecolumns,
-		downloadtablefile,
-		#get, # NB: it makes more sense to extend Base.get since it is a dictionary lookup
-		getannotations,
-		getcolumn,
-		getcolumns,
-		getconfigfile,
-		getevaluation,
-		getevaluationbycontentsource,
-		getevaluationbyname,
-		getpermissions,
-		getprovenance,
-		getsubmission,
-		getsubmissionbundles,
-		getsubmissionstatus,
-		getsubmissions,
-		gettablecolumns,
-		getteam,
-		getteammembers,
-		getuserprofile,
-		getwiki,
-		getwikiheaders,
-		invalidateapikey,
-		login,
-		logout,
-		md5query,
-		onweb,
-		printentity,
-		restdelete,
-		restget,
-		restpost,
-		restput,
-		sendmessage,
-		setannotations,
-		setendpoints,
-		setpermissions,
-		setprovenance,
-		store,
-		submit,
-		tablequery,
-		updateactivity,
-		uploadfile,
+	# Entity
+	create,
 
-		# Entity
-		create,
+	# Activity
+	used,
+	executed
 
-		# Activity
-		used,
-		executed
-
-	include("wrapper.jl")
-	include("types.jl")
-	include("synapse.jl")
-	include("utils.jl")
-	include("entity.jl")
-	include("annotations.jl")
-	include("cache.jl")
-end
+include("wrapper.jl")
+include("types.jl")
+include("synapse.jl")
+include("utils.jl")
+include("entity.jl")
+include("annotations.jl")
+include("cache.jl")
 
 end

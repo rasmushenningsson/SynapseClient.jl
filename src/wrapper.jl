@@ -1,5 +1,5 @@
-import Base: convert, ==, getindex, setindex!, haskey,
-             length, start, next, done, eltype,
+import Base: convert, ==, getproperty, setproperty!, getindex, setindex!, haskey,
+             length, iterate, eltype,
              get, get!, getkey, delete!, pop!, keys, values, merge, merge!,
              sizehint!, keytype, valtype
 
@@ -10,13 +10,13 @@ abstract type AbstractSynapseDict <: AbstractDict{Any,Any} end # Would have pref
 
 # utility function for making sure AbstractSynapse objects are passed as PyObjects to python
 unwrap(a::Any) = a # fallback
-unwrap(a::AbstractSynapse) = a.po
-unwrap(a::AbstractSynapseDict) = a.po
+unwrap(a::AbstractSynapse) = getfield(a,:po) #a.po
+unwrap(a::AbstractSynapseDict) = getfield(a,:po) #a.po
 
-# unwrap for keyword arguments
-unwraptuple(t::Tuple{Symbol,Any}) = t # fallback
-unwraptuple(t::Tuple{Symbol,AbstractSynapse}) = (t[1],t[2].po)
-unwraptuple(t::Tuple{Symbol,AbstractSynapseDict}) = (t[1],t[2].po)
+# # unwrap for keyword arguments
+# unwrappair(t::Pair{Symbol,Any}) = t # fallback
+# unwrappair(t::Pair{Symbol,AbstractSynapse}) = (t[1],t[2].po)
+# unwrappair(t::Pair{Symbol,AbstractSynapseDict}) = (t[1],t[2].po)
 
 # wrap is more or less the inverse of unwrap()
 wrap(x::Any) = x # fallback
@@ -57,14 +57,17 @@ end
 # function synapsecall(obj::PyObject,method::Symbol,args...;kwargs...)
 # 	wrap(pycall(obj[method], PyObject, 
 # 	                        map(unwrap,args)...; 
-# 	                        map(unwraptuple,kwargs)...))
+# 	                        map(unwrappair,kwargs)...))
 # end
 function synapsecall(func::PyObject,args...;kwargs...)
+	# wrap(pycall(func, PyObject, 
+	#                         map(unwrap,args)...; 
+	#                         map(unwrappair,kwargs)...))
 	wrap(pycall(func, PyObject, 
-	                        map(unwrap,args)...; 
-	                        map(unwraptuple,kwargs)...))
+	                        unwrap.(args)...;
+	                        (k=>unwrap(v) for (k,v) in kwargs)... ))
 end
-synapsecall(obj::PyObject,method::Symbol,args...;kwargs...) = synapsecall(obj[method],args...;kwargs...)
+synapsecall(obj::PyObject,method::Symbol,args...;kwargs...) = synapsecall(getproperty(obj,method),args...;kwargs...)
 synapsecall(obj::AbstractSynapse,method::Symbol,args...;kwargs...) = synapsecall(unwrap(obj),method,args...;kwargs...)
 # synapsecall(obj::AbstractSynapseDict,method::Symbol,args...;kwargs...) = synapsecall(unwrap(obj),method,args...;kwargs...)
 synapsecall(obj::AbstractSynapseDict,method::Symbol,args...;kwargs...) = synapsecall(convert(PyObject,obj),method,args...;kwargs...)
@@ -136,38 +139,45 @@ convert(::Type{PyObject}, a::AbstractSynapseDict) = convert(PyObject,unwrap(a))
 ==(x::AbstractSynapse, y::AbstractSynapse) = unwrap(x)==unwrap(y)
 ==(x::AbstractSynapseDict, y::AbstractSynapseDict) = unwrap(x)==unwrap(y)
 
-getindex(e::AbstractSynapse, key::AbstractString)              = wrap( unwrap(e)[key] )
-setindex!(e::AbstractSynapse, value, key::AbstractString)      = unwrap(e)[key] = value
+# old
+# getindex(e::AbstractSynapse, key::AbstractString)              = wrap( unwrap(e)[key] )
+# setindex!(e::AbstractSynapse, value, key::AbstractString)      = unwrap(e)[key] = value
+# # getindex(a::AbstractSynapseDict, key::AbstractString)         = wrap( unwrap(a)[key] )
+# getindex(a::AbstractSynapseDict, key::AbstractString)         = wrap( get(unwrap(a).o,Any,key) )
+# setindex!(a::AbstractSynapseDict, value, key::AbstractString) = unwrap(a)[key] = value
+
+getproperty(e::AbstractSynapse, key::Symbol)         = wrap( getproperty(unwrap(e),key) )
+setproperty!(e::AbstractSynapse, key::Symbol, value) = setproperty!(unwrap(e),key,value)
 # getindex(a::AbstractSynapseDict, key::AbstractString)         = wrap( unwrap(a)[key] )
 getindex(a::AbstractSynapseDict, key::AbstractString)         = wrap( get(unwrap(a).o,Any,key) )
 setindex!(a::AbstractSynapseDict, value, key::AbstractString) = unwrap(a)[key] = value
 
 
-hasattr = pybuiltin(:hasattr)
+
+hasattr = PyNULL() # pybuiltin(:hasattr)
 haskey(e::AbstractSynapse, key)      = synapsecall(hasattr, e, key)
 haskey(d::AbstractSynapseDict, key) = haskey(unwrap(d), key)
 
 
-length(a::AbstractSynapseDict) = length(a.po)
-start(a::AbstractSynapseDict) = start(a.po)
-next(a::AbstractSynapseDict,state) = next(a.po,state)
-done(a::AbstractSynapseDict,state) = done(a.po,state)
+length(a::AbstractSynapseDict) = length(unwrap(a.po))
+iterate(a::AbstractSynapseDict) = iterate(unwrap(a.po))
+iterate(a::AbstractSynapseDict,state) = iterate(unwrap(a.po),state)
 eltype(::Type{AbstractSynapseDict}) = Pair{Any,Any}#eltype(PyDict) # PyDict bug?
 
 
-get(a::AbstractSynapseDict, key, default) = get(a.po,key,default)
-get(f::Function, a::AbstractSynapseDict, key) = get(f,a.po,key)
-get!(a::AbstractSynapseDict, key, default) = get(!a.po,key,default)
-get!(f::Function, a::AbstractSynapseDict, key) = get!(f,a.po,key)
-getkey(a::AbstractSynapseDict, key, default) = getkey(a.po,key,default)
-delete!(a::AbstractSynapseDict, key) = delete!(a.po,key)
-pop!(a::AbstractSynapseDict, key) = pop!(a.po,key)
-pop!(a::AbstractSynapseDict, key, default) = pop!(a.po,key,default)
-keys(a::AbstractSynapseDict) = keys(a.po)
-values(a::AbstractSynapseDict) = values(a.po)
-merge(a::T, others...) where {T<:AbstractSynapseDict} = T(merge(a.po,others))
-merge!(a::T, others...) where {T<:AbstractSynapseDict} = merge!(a.po,others)
-sizehint!(a::AbstractSynapseDict, n) = sizehint!(a.po,n)
-keytype(a::AbstractSynapseDict) = keytype(a.po)
-valtype(a::AbstractSynapseDict) = valuetype(a.po)
+get(a::AbstractSynapseDict, key, default) = get(unwrap(a.po),key,default)
+get(f::Function, a::AbstractSynapseDict, key) = get(f,unwrap(a.po),key)
+get!(a::AbstractSynapseDict, key, default) = get(!unwrap(a.po),key,default)
+get!(f::Function, a::AbstractSynapseDict, key) = get!(f,unwrap(a.po),key)
+getkey(a::AbstractSynapseDict, key, default) = getkey(unwrap(a.po),key,default)
+delete!(a::AbstractSynapseDict, key) = delete!(unwrap(a.po),key)
+pop!(a::AbstractSynapseDict, key) = pop!(unwrap(a.po),key)
+pop!(a::AbstractSynapseDict, key, default) = pop!(unwrap(a.po),key,default)
+keys(a::AbstractSynapseDict) = keys(unwrap(a.po))
+values(a::AbstractSynapseDict) = values(unwrap(a.po))
+merge(a::T, others...) where {T<:AbstractSynapseDict} = T(merge(unwrap(a.po),others))
+merge!(a::T, others...) where {T<:AbstractSynapseDict} = merge!(unwrap(a.po),others)
+sizehint!(a::AbstractSynapseDict, n) = sizehint!(unwrap(a.po),n)
+keytype(a::AbstractSynapseDict) = keytype(unwrap(a.po))
+valtype(a::AbstractSynapseDict) = valuetype(unwrap(a.po))
 
