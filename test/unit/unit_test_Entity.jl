@@ -17,7 +17,7 @@ using SynapseClient.entity
 
 
 
-facts("Entity") do
+@testset "Entity" begin
     # Test the basics of creating and accessing properties on an entity
     for i in 0:1
         e = Entity(name="Test object", description="I hope this works",
@@ -31,66 +31,66 @@ facts("Entity") do
         if i == 1
             e = create(Entity,e)
         end    
-        @fact e["parentId"] --> "syn1234"
+        @test e.parentId == "syn1234"
 
 
-        @fact e["properties"]["parentId"] -->"syn1234"
+        @test e.properties["parentId"] =="syn1234"
 
-        @fact e["foo"] --> 123
+        @test e.foo == 123
 
 
-        @fact e["annotations"]["foo"] --> 123
+        @test e.annotations["foo"] == 123
 
-        @fact haskey(e, "parentId") --> true
-        @fact haskey(e, "foo") --> true
-        @fact haskey(e, "qwerqwer") --> false
+        @test haskey(e, "parentId")
+        @test haskey(e, "foo")
+        @test haskey(e, "qwerqwer") == false
 
         # Annotations is a bit funny, because there is a property call
         # "annotations", which will be masked by a member of the object
         # called "annotations". Because annotations are open-ended, we
         # might even have an annotations called "annotations", which gets
         # really confusing.
-        @fact typeof(e["annotations"]) <: Associative --> true
+        @test typeof(e.annotations) <: AbstractDict
         
 
-        @fact e["properties"]["annotations"] --> "/repo/v1/entity/syn1234/annotations"
-        @fact e["annotations"]["annotations"] --> "How confusing!"
+        @test e.properties["annotations"] == "/repo/v1/entity/syn1234/annotations"
+        @test e.annotations["annotations"] == "How confusing!"
 
-        @fact e["nerds"] --> ["chris","jen","janey"]
-        @fact all(k->haskey(e,k), ["name", "description", "foo", "nerds", "annotations", "md5", "parentId"]) --> true
+        @test e.nerds == ["chris","jen","janey"]
+        @test all(k->haskey(e,k), [:name, :description, :foo, :nerds, :annotations, :md5, :parentId])
         
         # Test modifying properties
-        e["description"] = "Working, so far"
-        @fact e["description"] --> "Working, so far"
-        e["description"] = "Wiz-bang flapdoodle"
-        @fact e["description"] --> "Wiz-bang flapdoodle"
+        e.description = "Working, so far"
+        @test e.description == "Working, so far"
+        e.description = "Wiz-bang flapdoodle"
+        @test e.description == "Wiz-bang flapdoodle"
 
         # Test modifying annotations
-        e["foo"] = 999
-        @fact e["annotations"]["foo"] --> 999
-        e["foo"] = 12345
-        @fact e["annotations"]["foo"] --> 12345
+        e.foo = 999
+        @test e.annotations["foo"] == 999
+        e.foo = 12345
+        @test e.annotations["foo"] == 12345
 
         # Test creating a new annotation
-        e["bar"] = 888
-        @fact e["annotations"]["bar"] --> 888
-        e["bat"] = 7788
-        @fact e["annotations"]["bat"] --> 7788
+        e.bar = 888
+        @test e.annotations["bar"] == 888
+        e.bat = 7788
+        @test e.annotations["bat"] == 7788
 
         # # Test replacing annotations object
-        e["annotations"] = Dict("splat"=>"a totally new set of annotations", "foo"=>456)
-        @fact e["foo"] --> 456
+        e.annotations = Dict("splat"=>"a totally new set of annotations", "foo"=>456)
+        @test e.foo == 456
 
-        @fact typeof(e["annotations"]) <: Associative --> true
+        @test typeof(e.annotations) <: AbstractDict
 
-        @fact e["annotations"]["foo"] --> 456
+        @test e.annotations["foo"] == 456
 
-        @fact e["properties"]["annotations"] --> "/repo/v1/entity/syn1234/annotations"
+        @test e.properties["annotations"] == "/repo/v1/entity/syn1234/annotations"
 
         ## test unicode properties
-        e["train"] = "時刻表には記載されない　月への列車が来ると聞いて"
-        e["band"] = "Motörhead"
-        e["lunch"] = "すし"
+        e.train = "時刻表には記載されない　月への列車が来ると聞いて"
+        e.band = "Motörhead"
+        e.lunch = "すし"
 
 
         println(e)
@@ -117,7 +117,7 @@ end
 #     assert foobar.annotations['n00b'] == 'henry'
 
 
-facts("entity_creation") do
+@testset "entity_creation" begin
     props = Dict(
         "id"=>"syn123456",
         "concreteType"=>"org.sagebionetworks.repo.model.Folder",
@@ -127,10 +127,10 @@ facts("entity_creation") do
     annos = Dict("testing"=>123)
     folder = create(Entity, props, annos)
 
-    @fact folder["concreteType"] --> "org.sagebionetworks.repo.model.Folder"
-    @fact typeof(folder) --> Folder
-    @fact folder["name"] --> "Testing123"
-    @fact folder["testing"] --> 123
+    @test folder.concreteType == "org.sagebionetworks.repo.model.Folder"
+    @test typeof(folder) == Folder
+    @test folder.name == "Testing123"
+    @test folder.testing == 123
 
     ## In case of unknown concreteType, fall back on generic Entity object
     props = Dict(
@@ -141,66 +141,66 @@ facts("entity_creation") do
     )
     whatsits = create(Entity,props)
 
-    @fact whatsits["concreteType"] --> "org.sagebionetworks.repo.model.DoesntExist"
-    @fact typeof(whatsits) --> Entity
+    @test whatsits.concreteType == "org.sagebionetworks.repo.model.DoesntExist"
+    @test typeof(whatsits) == Entity
 end
 
-facts("parent_id_required") do
+@testset "parent_id_required" begin
     xkcd1 = File("http://xkcd.com/1343/", name="XKCD: Manuals", parent="syn1000001", synapseStore=false)
-    @fact xkcd1["parentId"] --> "syn1000001"
+    @test xkcd1.parentId == "syn1000001"
 
     xkcd2 = File("http://xkcd.com/1343/", name="XKCD: Manuals", parentId="syn1000002", synapseStore=false)
-    @fact xkcd2["parentId"] --> "syn1000002"
+    @test xkcd2.parentId == "syn1000002"
 
-    @fact_pythrows SynapseMalformedEntityError File("http://xkcd.com/1343/", name="XKCD: Manuals", synapseStore=false)
+    @test_pythrows SynapseMalformedEntityError File("http://xkcd.com/1343/", name="XKCD: Manuals", synapseStore=false)
 end
 
-facts("entity_constructors") do
+@testset "entity_constructors" begin
     project = Project("TestProject", id="syn1001", foo="bar")
-    @fact project["name"] --> "TestProject"
-    @fact project["foo"] --> "bar"
+    @test project.name == "TestProject"
+    @test project.foo == "bar"
 
     folder = Folder("MyFolder", parent=project, foo="bat", id="syn1002")
-    @fact folder["name"] --> "MyFolder"
-    @fact folder["foo"] --> "bat"
-    @fact folder["parentId"] --> "syn1001"
+    @test folder.name == "MyFolder"
+    @test folder.foo == "bat"
+    @test folder.parentId == "syn1001"
 
     a_file = File("/path/to/fabulous_things.zzz", parent=folder, foo="biz", contentType="application/cattywampus")
-    #@fact a_file.name --> "fabulous_things.zzz"
-    @fact a_file["concreteType"] --> "org.sagebionetworks.repo.model.FileEntity"
-    @fact a_file["path"] --> "/path/to/fabulous_things.zzz"
-    @fact a_file["foo"] --> "biz"
-    @fact a_file["parentId"] --> "syn1002"
-    @fact a_file["contentType"] --> "application/cattywampus"
-    @fact "contentType" in keys(a_file["_file_handle"]) --> true
+    #@test a_file.name == "fabulous_things.zzz"
+    @test a_file.concreteType == "org.sagebionetworks.repo.model.FileEntity"
+    @test a_file.path == "/path/to/fabulous_things.zzz"
+    @test a_file.foo == "biz"
+    @test a_file.parentId == "syn1002"
+    @test a_file.contentType == "application/cattywampus"
+    @test "contentType" in keys(a_file._file_handle)
 end
 
-facts("property_keys") do
-    @fact "parentId" in PyFile["_property_keys"] --> true
-    @fact "versionNumber" in PyFile["_property_keys"] --> true
-    @fact "dataFileHandleId" in PyFile["_property_keys"] --> true
+@testset "property_keys" begin
+    @test "parentId" in PyFile._property_keys
+    @test "versionNumber" in PyFile._property_keys
+    @test "dataFileHandleId" in PyFile._property_keys
 end
 
-facts("keys") do
+@testset "keys" begin
     f = File("foo.xyz", parent="syn1234", foo="bar")
 
     # iter_keys = collect(keys(f)) # TODO: implement keys(e::AbstractEntity)
 
 
-    # @fact "parentId" in iter_keys --> true
-    # @fact "name" in iter_keys --> true
-    # @fact "foo" in iter_keys --> true
-    # @fact "concreteType" in iter_keys --> true
+    # @test "parentId" in iter_keys == true
+    # @test "name" in iter_keys == true
+    # @test "foo" in iter_keys == true
+    # @test "concreteType" in iter_keys == true
 end
 
-facts("attrs") do
+@testset "attrs" begin
     f = File("foo.xyz", parent="syn1234", foo="bar")
-    @fact haskey(f, "parentId") --> true
-    @fact haskey(f, "foo") --> true
-    @fact haskey(f, "path") --> true
+    @test haskey(f, "parentId")
+    @test haskey(f, "foo")
+    @test haskey(f, "path")
 end
 
-facts("split_entity_namespaces") do
+@testset "split_entity_namespaces" begin
     # """Test split_entity_namespaces"""
 
     e = Dict("concreteType"=>"org.sagebionetworks.repo.model.Folder",
@@ -210,11 +210,11 @@ facts("split_entity_namespaces") do
          "parentId"=>"syn1234")
     (properties,annotations,local_state) = split_entity_namespaces(e)
 
-    @fact Set(keys(properties)) --> Set(["concreteType", "name", "parentId"])
-    @fact properties["name"] --> "Henry"
-    @fact Set(keys(annotations)) --> Set(["color", "foo"])
-    @fact annotations["foo"] --> 1234
-    @fact length(local_state) --> 0
+    @test Set(keys(properties)) == Set(["concreteType", "name", "parentId"])
+    @test properties["name"] == "Henry"
+    @test Set(keys(annotations)) == Set(["color", "foo"])
+    @test annotations["foo"] == 1234
+    @test length(local_state) == 0
 
     e = Dict("concreteType"=>"org.sagebionetworks.repo.model.FileEntity",
          "name"=>"Henry",
@@ -227,28 +227,28 @@ facts("split_entity_namespaces") do
          "path"=>"/foo/bar/bat/foo.xyz")
     (properties,annotations,local_state) = split_entity_namespaces(e)
 
-    @fact Set(keys(properties)) --> Set(["concreteType", "name", "parentId", "dataFileHandleId"])
-    @fact properties["name"] --> "Henry"
-    @fact properties["dataFileHandleId"] --> 54321
-    @fact Set(keys(annotations)) --> Set(["color", "foo"])
-    @fact annotations["foo"] --> 1234
-    @fact Set(keys(local_state)) --> Set(["cacheDir", "files", "path"])
-    @fact local_state["cacheDir"] --> "/foo/bar/bat"
+    @test Set(keys(properties)) == Set(["concreteType", "name", "parentId", "dataFileHandleId"])
+    @test properties["name"] == "Henry"
+    @test properties["dataFileHandleId"] == 54321
+    @test Set(keys(annotations)) == Set(["color", "foo"])
+    @test annotations["foo"] == 1234
+    @test Set(keys(local_state)) == Set(["cacheDir", "files", "path"])
+    @test local_state["cacheDir"] == "/foo/bar/bat"
 
     f = create(Entity,properties,annotations,local_state)
-    @fact f["properties"]["dataFileHandleId"] --> 54321
-    @fact f["properties"]["name"] --> "Henry"
-    @fact f["annotations"]["foo"] --> 1234
-    @fact f["__dict__"]["cacheDir"] --> "/foo/bar/bat"
-    @fact f["__dict__"]["path"] --> "/foo/bar/bat/foo.xyz"
+    @test f.properties["dataFileHandleId"] == 54321
+    @test f.properties["name"] == "Henry"
+    @test f.annotations["foo"] == 1234
+    @test f.__dict__["cacheDir"] == "/foo/bar/bat"
+    @test f.__dict__["path"] == "/foo/bar/bat/foo.xyz"
 end
 
-facts("concrete_type") do
+@testset "concrete_type" begin
     f1 = File("http://en.wikipedia.org/wiki/File:Nettlebed_cave.jpg", name="Nettlebed Cave", parent="syn1234567", synapseStore=false)
-    @fact f1["concreteType"] --> "org.sagebionetworks.repo.model.FileEntity"
+    @test f1.concreteType == "org.sagebionetworks.repo.model.FileEntity"
 end
 
-facts("is_container") do
+@testset "is_container" begin
     ## result from a Synapse entity annotation query
     ## Note: prefix may be capitalized or not, depending on the from clause of the query
     result = Dict("entity.versionNumber"=>1,
@@ -257,24 +257,24 @@ facts("is_container") do
               "entity.createdOn"=>1451512703905,
               "entity.id"=>"syn5570912",
               "entity.name"=>"blah")
-    @fact is_container(result) --> true
+    @test is_container(result)
 
     result = Dict("Entity.nodeType"=>"project",
               "Entity.id"=>"syn5570912",
               "Entity.name"=>"blah")
-    @fact is_container(result) --> true
+    @test is_container(result)
 
     result = Dict("entity.concreteType"=>["org.sagebionetworks.repo.model.Folder"],
               "entity.id"=>"syn5570914",
               "entity.name"=>"flapdoodle")
-    @fact is_container(result) --> true
+    @test is_container(result)
 
     result = Dict("File.concreteType"=>["org.sagebionetworks.repo.model.FileEntity"],
               "File.id"=>"syn5570914",
               "File.name"=>"flapdoodle")
-    @fact is_container(result) --> false
+    @test is_container(result) == false
 
-    @fact is_container(Folder("Stuff", parentId="syn12345")) --> true
-    @fact is_container(Project("My Project", parentId="syn12345")) --> true
-    @fact is_container(File("asdf.png", parentId="syn12345")) --> false
+    @test is_container(Folder("Stuff", parentId="syn12345"))
+    @test is_container(Project("My Project", parentId="syn12345"))
+    @test is_container(File("asdf.png", parentId="syn12345")) == false
 end

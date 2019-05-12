@@ -1,7 +1,8 @@
 module SynapseClientTests
 
 using SynapseClient, PyCall
-using FactCheck
+using Test
+using Dates
 import SynapseClient: utils, 
                       AbstractEntity, AbstractSynapse, AbstractSynapseDict, 
                       Activity, Folder, File, Project, Evaluation, Submission, DictObject, Team
@@ -9,19 +10,19 @@ import SynapseClient: utils,
 ValueError = pybuiltin(:ValueError)
 PyKeyError = pybuiltin(:KeyError)
 
-_raise_for_status = SynapseClient.synapseclient.exceptions[:_raise_for_status]
-SynapseMalformedEntityError = SynapseClient.synapseclient.exceptions[:SynapseMalformedEntityError]
-SynapseHTTPError = SynapseClient.synapseclient.exceptions[:SynapseHTTPError]
+_raise_for_status = SynapseClient.synapseclient.exceptions._raise_for_status
+SynapseMalformedEntityError = SynapseClient.synapseclient.exceptions.SynapseMalformedEntityError
+SynapseHTTPError = SynapseClient.synapseclient.exceptions.SynapseHTTPError
 
 
-PyDictObject = SynapseClient.synapseclient.dict_object[:DictObject]
+PyDictObject = SynapseClient.synapseclient.dict_object.DictObject
 PyFile = SynapseClient.synapseclient.File
 
 
 macro catchpyerror(expr)
 	esc(quote
 		begin
-			err = Void()
+			err = nothing
 			try
 				$expr
 			catch e
@@ -32,16 +33,15 @@ macro catchpyerror(expr)
 		end
 	end)
 end
-macro fact_pythrows( exception, expr )
-	esc(:(@fact @catchpyerror($expr) --> $exception))
+macro test_pythrows( exception, expr )
+	esc(:(@test @catchpyerror($expr) == $exception))
 end
 
 
 
 
 include("unit/run_unit_tests.jl")
-include("integration/run_integration_tests.jl")
+# include("integration/run_integration_tests.jl")
 
 
-FactCheck.exitstatus()
 end

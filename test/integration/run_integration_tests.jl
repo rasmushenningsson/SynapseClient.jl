@@ -37,10 +37,10 @@ end
 syn = SynapseClient.Synapse(debug=true, skip_checks=true)
 
 print("Testing against endpoints:")
-print("  " * syn["repoEndpoint"])
-print("  " * syn["authEndpoint"])
-print("  " * syn["fileHandleEndpoint"])
-print("  " * syn["portalEndpoint"] * "\n")
+print("  " * syn.repoEndpoint)
+print("  " * syn.authEndpoint)
+print("  " * syn.fileHandleEndpoint)
+print("  " * syn.portalEndpoint * "\n")
 
 login(syn)
 

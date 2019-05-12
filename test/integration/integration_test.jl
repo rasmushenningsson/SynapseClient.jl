@@ -125,7 +125,7 @@ SystemExit = pybuiltin(:SystemExit)
 #         print("To fully test the login method a configuration file is required")
 
 println(project)
-facts("entity_version") do
+@testset "entity_version" begin
     # Make an Entity and make sure the version is one
     entity = File(parent=project["id"])
     entity["path"] = utils.make_bogus_data_file()
@@ -134,43 +134,43 @@ facts("entity_version") do
     
     setannotations(syn, entity, Dict("fizzbuzz"=>111222))
     entity = getentity(syn, entity)
-    @fact entity["versionNumber"] --> 1
+    @test entity["versionNumber"] == 1
 
     # Update the Entity and make sure the version is incremented
     entity["foo"] = 998877
     entity["name"] = "foobarbat"
     entity["description"] = "This is a test entity..."
     entity = updateentity(syn, entity, incrementVersion=true, versionLabel="Prada remix")
-    @fact entity["versionNumber"] --> 2
+    @test entity["versionNumber"] == 2
 
     # Get the older data and verify the random stuff is still there
     annotations = getannotations(syn, entity, version=1)
-    @fact annotations["fizzbuzz"][1] --> 111222
+    @test annotations["fizzbuzz"][1] == 111222
     returnEntity = getentity(syn, entity, version=1)
-    @fact returnEntity["versionNumber"] --> 1
-    @fact returnEntity["fizzbuzz"][1] --> 111222
-    @fact haskey(returnEntity,"foo") --> false
+    @test returnEntity["versionNumber"] == 1
+    @test returnEntity["fizzbuzz"][1] == 111222
+    @test haskey(returnEntity,"foo") == false
 
     # Try the newer Entity
     returnEntity = getentity(syn, entity)
-    @fact returnEntity["versionNumber"] --> 2
-    @fact returnEntity["foo"][1] --> 998877
-    @fact returnEntity["name"] --> "foobarbat"
-    @fact returnEntity["description"] --> "This is a test entity..."
-    @fact returnEntity["versionLabel"] --> "Prada remix"
+    @test returnEntity["versionNumber"] == 2
+    @test returnEntity["foo"][1] == 998877
+    @test returnEntity["name"] == "foobarbat"
+    @test returnEntity["description"] == "This is a test entity..."
+    @test returnEntity["versionLabel"] == "Prada remix"
 
     # Try the older Entity again
     returnEntity = downloadentity(syn, entity, version=1)
-    @fact returnEntity["versionNumber"] --> 1
-    @fact returnEntity["fizzbuzz"][1] --> 111222
-    @fact haskey(returnEntity,"foo") --> false
+    @test returnEntity["versionNumber"] == 1
+    @test returnEntity["fizzbuzz"][1] == 111222
+    @test haskey(returnEntity,"foo") == false
     
     # Delete version 2 
     delete(syn, entity, version=2)
     returnEntity = getentity(syn, entity)
-    @fact returnEntity["versionNumber"] --> 1
+    @test returnEntity["versionNumber"] == 1
 end
-facts("md5_query") do
+@testset "md5_query" begin
     # Add the same Entity several times
     path = utils.make_bogus_data_file()
     schedule_for_cleanup(path)
@@ -185,11 +185,11 @@ facts("md5_query") do
     end    
     # Although we expect num results, it is possible for the MD5 to be non-unique
     results = md5query(syn, utils.md5_for_file(path)[:hexdigest]())
-    @fact string(sort([res["id"] for res in results])) --> string(sort(stored))
-    @fact length(results) --> num
+    @test string(sort([res["id"] for res in results])) == string(sort(stored))
+    @test length(results) == num
 end
 
-facts("uploadFile_given_dictionary") do
+@testset "uploadFile_given_dictionary" begin
     # Make a Folder Entity the old fashioned way
     folder = Dict("concreteType"=> SynapseClient.synapseclient.Folder[:_synapse_entity_type], 
             "parentId"  => project["id"], 
@@ -199,8 +199,8 @@ facts("uploadFile_given_dictionary") do
     
     # Download and verify that it is the same file
     entity = get(syn, entity)
-    @fact entity["parentId"] --> project["id"]
-    @fact entity["foo"][1] --> 334455
+    @test entity["parentId"] == project["id"]
+    @test entity["foo"][1] == 334455
 
     # Update via a dictionary
     path = utils.make_bogus_data_file()
@@ -216,12 +216,12 @@ facts("uploadFile_given_dictionary") do
 
     # Verify it works
     entity = store(syn, rareCase)
-    @fact entity["description"] --> rareCase["description"]
-    @fact entity["name"] --> "fooDictionary"
+    @test entity["description"] == rareCase["description"]
+    @test entity["name"] == "fooDictionary"
     entity = get(syn, entity["id"])
 end
 
-facts("uploadFileEntity") do
+@testset "uploadFileEntity" begin
     # Create a FileEntity
     # Dictionaries default to FileEntity as a type
     fname = utils.make_bogus_data_file()
@@ -235,12 +235,12 @@ facts("uploadFileEntity") do
     entity = downloadentity(syn, entity)
 
     print(entity["files"])
-    @fact entity["files"][1] --> splitdir(fname)[2]
-    # @fact filecmp.cmp(fname, entity["path"])
+    @test entity["files"][1] == splitdir(fname)[2]
+    # @test filecmp.cmp(fname, entity["path"])
 
     # Check if we upload the wrong type of file handle
     fh = restget(syn, "/entity/$(entity["id"])/filehandles")["list"][1]
-    @fact fh["concreteType"] --> "org.sagebionetworks.repo.model.file.S3FileHandle"
+    @test fh["concreteType"] == "org.sagebionetworks.repo.model.file.S3FileHandle"
 
     # Create a different temporary file
     fname = utils.make_bogus_data_file()
@@ -252,35 +252,35 @@ facts("uploadFileEntity") do
     # Download and verify that it is the same file
     entity = downloadentity(syn, entity)
     print(entity["files"])
-    @fact entity["files"][1] --> splitdir(fname)[2]
-    # @fact filecmp.cmp(fname, entity["path"])
+    @test entity["files"][1] == splitdir(fname)[2]
+    # @test filecmp.cmp(fname, entity["path"])
 end
 
-facts("test_downloadFile") do
+@testset "test_downloadFile" begin
     # See if the a "wget" works
     filename = utils.download_file("http://dev-versions.synapse.sagebase.org/sage_bionetworks_logo_274x128.png")
     schedule_for_cleanup(filename)
-    @fact isfile(filename) --> true
+    @test isfile(filename) == true
 end
 
-facts("test_version_check") do
+@testset "test_version_check" begin
     # Check current version against dev-synapsePythonClient version file
     version_check(version_url="http://dev-versions.synapse.sagebase.org/synapsePythonClient")
 
     # Should be higher than current version and return true
-    @fact version_check(current_version="999.999.999", version_url="http://dev-versions.synapse.sagebase.org/synapsePythonClient") --> true
+    @test version_check(current_version="999.999.999", version_url="http://dev-versions.synapse.sagebase.org/synapsePythonClient") == true
 
     # Test out of date version
-    @fact version_check(current_version="0.0.1", version_url="http://dev-versions.synapse.sagebase.org/synapsePythonClient") --> false
+    @test version_check(current_version="0.0.1", version_url="http://dev-versions.synapse.sagebase.org/synapsePythonClient") == false
 
     # Test blacklisted version
-    @fact_pythrows SystemExit version_check(current_version="0.0.0", version_url="http://dev-versions.synapse.sagebase.org/ynapsePythonClient")
+    @test_pythrows SystemExit version_check(current_version="0.0.0", version_url="http://dev-versions.synapse.sagebase.org/ynapsePythonClient")
 
     # Test bad URL
-    @fact version_check(current_version="999.999.999", version_url="http://dev-versions.synapse.sagebase.org/bad_filename_doesnt_exist") --> false
+    @test version_check(current_version="999.999.999", version_url="http://dev-versions.synapse.sagebase.org/bad_filename_doesnt_exist") == false
 end
 
-facts("provenance") do
+@testset "provenance" begin
     # Create a File Entity
     fname = utils.make_bogus_data_file()
     schedule_for_cleanup(fname)
@@ -307,28 +307,28 @@ facts("provenance") do
     
     # Retrieve and verify the saved Provenance record
     retrieved_activity = getprovenance(syn, data_entity)
-    @fact retrieved_activity --> activity
+    @test retrieved_activity == activity
 
     # Test Activity update
     new_description = "Generate random numbers like a gangsta"
     retrieved_activity["description"] = new_description
     updated_activity = updateactivity(syn, retrieved_activity)
-    @fact updated_activity["name"] --> retrieved_activity["name"]
-    @fact updated_activity["description"] --> new_description
+    @test updated_activity["name"] == retrieved_activity["name"]
+    @test updated_activity["description"] == new_description
 
     # Test delete
     deleteprovenance(syn, data_entity)
-    @fact_pythrows SynapseHTTPError getprovenance(syn,  data_entity["id"])
+    @test_pythrows SynapseHTTPError getprovenance(syn,  data_entity["id"])
 end
 
-facts("annotations") do
+@testset "annotations" begin
     # Get the annotations of an Entity
     entity = store(syn, Folder(parent=project["id"]))
     anno = getannotations(syn, entity)
-    @fact haskey(anno, "id") --> true
-    @fact haskey(anno, "etag") --> true
-    @fact anno["id"] --> entity["id"]
-    @fact anno["etag"] --> entity["etag"]
+    @test haskey(anno, "id") == true
+    @test haskey(anno, "etag") == true
+    @test anno["id"] == entity["id"]
+    @test anno["etag"] == entity["etag"]
 
     # Set the annotations, with keywords too
     anno["bogosity"] = "total"
@@ -336,10 +336,10 @@ facts("annotations") do
 
     # Check the update
     annote = getannotations(syn, entity)
-    @fact annote["bogosity"] --> ["total"]
-    @fact annote["wazoo"] --> ["Frank"]
-    @fact annote["label"] --> ["Barking Pumpkin"]
-    @fact annote["shark"] --> [16776960]
+    @test annote["bogosity"] == ["total"]
+    @test annote["wazoo"] == ["Frank"]
+    @test annote["label"] == ["Barking Pumpkin"]
+    @test annote["shark"] == [16776960]
 
     # More annotation setting
     annote["primes"] = [2,3,5,7,11,13,17,19,23,29]
@@ -350,31 +350,31 @@ facts("annotations") do
     
     # Check it again
     annotation = getannotations(syn, entity)
-    @fact annotation["primes"] --> [2,3,5,7,11,13,17,19,23,29]
-    @fact annotation["phat_numbers"] --> [1234.5678, 8888.3333, 1212.3434, 6677.8899]
-    @fact annotation["goobers"] --> ["chris", "jen", "jane"]
-    # @fact annotation["present_time"][1].strftime("%Y-%m-%d %H:%M:%S") --> annote["present_time"].strftime("%Y-%m-%d %H:%M:%S")
-    @fact string(annotation["present_time"][1]) --> string(annote["present_time"])
+    @test annotation["primes"] == [2,3,5,7,11,13,17,19,23,29]
+    @test annotation["phat_numbers"] == [1234.5678, 8888.3333, 1212.3434, 6677.8899]
+    @test annotation["goobers"] == ["chris", "jen", "jane"]
+    # @test annotation["present_time"][1].strftime("%Y-%m-%d %H:%M:%S") == annote["present_time"].strftime("%Y-%m-%d %H:%M:%S")
+    @test string(annotation["present_time"][1]) == string(annote["present_time"])
 end
-facts("get_user_profile") do
+@testset "get_user_profile" begin
     p1 = getuserprofile(syn)
 
     ## get by name
     p2 = getuserprofile(syn, p1["userName"])
-    @fact p2["userName"] --> p1["userName"]
+    @test p2["userName"] == p1["userName"]
 
     ## get by user ID
     p2 = getuserprofile(syn, p1["ownerId"])
-    @fact p2["userName"] --> p1["userName"]
+    @test p2["userName"] == p1["userName"]
 end
 
-# facts("teams") do
+# @testset "teams" begin
 #     unique_name = "Team Gnarly Rad " * string(Base.Random.uuid4())
 #     team = Team(name=unique_name, description="A gnarly rad team", canPublicJoin=true)
 #     team = store(syn, team)
 
 #     team2 = getteam(syn, team["id"])
-#     @fact team --> team2
+#     @test team == team2
 
 #     ## Asynchronously populates index, so wait 'til it's there
 #     retry = 0
@@ -388,6 +388,6 @@ end
 #             break
 #         end
 #     end
-#     @fact team --> found_teams[1]
+#     @test team == found_teams[1]
 #     delete(syn, team)
 # end
