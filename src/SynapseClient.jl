@@ -2,14 +2,6 @@ module SynapseClient
 
 using PyCall
 
-# synapseInstalled = try
-# 	dummy = pyimport("synapseclient")
-# 	true
-# catch e
-# 	@warn "Please install the python package \"synapseclient\"."
-# 	false
-# end
-
 
 const synapseclient = PyNULL()
 const pyclient = PyNULL()
@@ -25,7 +17,7 @@ function __init__()
 		copy!(pyannotations, synapseclient.annotations)
 		copy!(pydict_object, synapseclient.dict_object)
 		copy!(pycache,       synapseclient.cache)
-		copy!(hasattr, pybuiltin(:hasattr))
+		copy!(pyhasattr, pybuiltin(:hasattr))
 	catch
 		@warn "Please install the python package \"synapseclient\"."
 	end
@@ -63,6 +55,7 @@ export
 	getuserprofile,
 	getwiki,
 	getwikiheaders,
+	hasattr,
 	invalidateapikey,
 	login,
 	logout,

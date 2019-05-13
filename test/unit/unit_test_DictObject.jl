@@ -16,9 +16,9 @@
     @test d["b"]=="foobar"
     #@test d["b"]=="foobar"
     @test d["nerds"]==["chris","jen","janey"]
-    @test haskey(d,"nerds") == true
+    @test hasattr(d,"nerds") == true
     #@test d["nerds"]==["chris","jen","janey"]
-    @test haskey(d,"qwerqwer") == false
+    @test hasattr(d,"qwerqwer") == false
 
     # println(keys(d))
     @test all([key in keys(d) for key in ["args_working?", "a", "b", "nerds"]]) == true

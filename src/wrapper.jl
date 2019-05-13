@@ -148,36 +148,40 @@ convert(::Type{PyObject}, a::AbstractSynapseDict) = convert(PyObject,unwrap(a))
 
 getproperty(e::AbstractSynapse, key::Symbol)         = wrap( getproperty(unwrap(e),key) )
 setproperty!(e::AbstractSynapse, key::Symbol, value) = setproperty!(unwrap(e),key,value)
-# getindex(a::AbstractSynapseDict, key::AbstractString)         = wrap( unwrap(a)[key] )
-getindex(a::AbstractSynapseDict, key::AbstractString)         = wrap( get(unwrap(a).o,Any,key) )
+getproperty(a::AbstractSynapseDict, key::Symbol)         = wrap( getproperty(unwrap(a).o,key) )
+setproperty!(a::AbstractSynapseDict, key::Symbol, value) = setproperty!(unwrap(a).o,key,value)
+
+getindex(a::AbstractSynapseDict, key::AbstractString)         = wrap(unwrap(a)[key])
 setindex!(a::AbstractSynapseDict, value, key::AbstractString) = unwrap(a)[key] = value
 
 
 
-hasattr = PyNULL() # pybuiltin(:hasattr)
-haskey(e::AbstractSynapse, key)      = synapsecall(hasattr, e, key)
-haskey(d::AbstractSynapseDict, key) = haskey(unwrap(d), key)
+pyhasattr = PyNULL() # pybuiltin(:hasattr)
+hasattr(e::AbstractSynapse, key)      = synapsecall(pyhasattr, e, key)
+# hasattr(d::AbstractSynapseDict, key) = haskey(unwrap(d), key)
+hasattr(d::AbstractSynapseDict, key) = synapsecall(pyhasattr, d, key)
+haskey(d::AbstractSynapseDict, key) = hasattr(d,key)
 
 
-length(a::AbstractSynapseDict) = length(unwrap(a.po))
-iterate(a::AbstractSynapseDict) = iterate(unwrap(a.po))
-iterate(a::AbstractSynapseDict,state) = iterate(unwrap(a.po),state)
+length(a::AbstractSynapseDict) = length(unwrap(a))
+iterate(a::AbstractSynapseDict) = iterate(unwrap(a))
+iterate(a::AbstractSynapseDict,state) = iterate(unwrap(a),state)
 eltype(::Type{AbstractSynapseDict}) = Pair{Any,Any}#eltype(PyDict) # PyDict bug?
 
 
-get(a::AbstractSynapseDict, key, default) = get(unwrap(a.po),key,default)
-get(f::Function, a::AbstractSynapseDict, key) = get(f,unwrap(a.po),key)
-get!(a::AbstractSynapseDict, key, default) = get(!unwrap(a.po),key,default)
-get!(f::Function, a::AbstractSynapseDict, key) = get!(f,unwrap(a.po),key)
-getkey(a::AbstractSynapseDict, key, default) = getkey(unwrap(a.po),key,default)
-delete!(a::AbstractSynapseDict, key) = delete!(unwrap(a.po),key)
-pop!(a::AbstractSynapseDict, key) = pop!(unwrap(a.po),key)
-pop!(a::AbstractSynapseDict, key, default) = pop!(unwrap(a.po),key,default)
-keys(a::AbstractSynapseDict) = keys(unwrap(a.po))
-values(a::AbstractSynapseDict) = values(unwrap(a.po))
-merge(a::T, others...) where {T<:AbstractSynapseDict} = T(merge(unwrap(a.po),others))
-merge!(a::T, others...) where {T<:AbstractSynapseDict} = merge!(unwrap(a.po),others)
-sizehint!(a::AbstractSynapseDict, n) = sizehint!(unwrap(a.po),n)
-keytype(a::AbstractSynapseDict) = keytype(unwrap(a.po))
-valtype(a::AbstractSynapseDict) = valuetype(unwrap(a.po))
+get(a::AbstractSynapseDict, key, default) = get(unwrap(a),key,default)
+get(f::Function, a::AbstractSynapseDict, key) = get(f,unwrap(a),key)
+get!(a::AbstractSynapseDict, key, default) = get!(unwrap(a),key,default)
+get!(f::Function, a::AbstractSynapseDict, key) = get!(f,unwrap(a),key)
+getkey(a::AbstractSynapseDict, key, default) = getkey(unwrap(a),key,default)
+delete!(a::AbstractSynapseDict, key) = delete!(unwrap(a),key)
+pop!(a::AbstractSynapseDict, key) = pop!(unwrap(a),key)
+pop!(a::AbstractSynapseDict, key, default) = pop!(unwrap(a),key,default)
+keys(a::AbstractSynapseDict) = keys(unwrap(a))
+values(a::AbstractSynapseDict) = values(unwrap(a))
+merge(a::T, others...) where {T<:AbstractSynapseDict} = T(merge(unwrap(a),others))
+merge!(a::T, others...) where {T<:AbstractSynapseDict} = merge!(unwrap(a),others)
+sizehint!(a::AbstractSynapseDict, n) = sizehint!(unwrap(a),n)
+keytype(a::AbstractSynapseDict) = keytype(unwrap(a))
+valtype(a::AbstractSynapseDict) = valtype(unwrap(a))
 

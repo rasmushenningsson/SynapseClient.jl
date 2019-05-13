@@ -351,7 +351,7 @@ end
 end
 
 @testset "raise_for_status" begin
-	@pydef type FakeResponse <: PyDictObject
+	@pydef mutable struct FakeResponse <: PyDictObject
 		json(self) = self["_json"] # why can't I use self._json here?
 	end
 

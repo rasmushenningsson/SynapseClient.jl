@@ -3,6 +3,7 @@ module SynapseClientTests
 using SynapseClient, PyCall
 using Test
 using Dates
+using UUIDs
 import SynapseClient: utils, 
                       AbstractEntity, AbstractSynapse, AbstractSynapseDict, 
                       Activity, Folder, File, Project, Evaluation, Submission, DictObject, Team
@@ -41,7 +42,7 @@ end
 
 
 include("unit/run_unit_tests.jl")
-# include("integration/run_integration_tests.jl")
+include("integration/run_integration_tests.jl")
 
 
 end

@@ -41,9 +41,9 @@ using SynapseClient.entity
 
         @test e.annotations["foo"] == 123
 
-        @test haskey(e, "parentId")
-        @test haskey(e, "foo")
-        @test haskey(e, "qwerqwer") == false
+        @test hasattr(e, "parentId")
+        @test hasattr(e, "foo")
+        @test hasattr(e, "qwerqwer") == false
 
         # Annotations is a bit funny, because there is a property call
         # "annotations", which will be masked by a member of the object
@@ -57,7 +57,7 @@ using SynapseClient.entity
         @test e.annotations["annotations"] == "How confusing!"
 
         @test e.nerds == ["chris","jen","janey"]
-        @test all(k->haskey(e,k), [:name, :description, :foo, :nerds, :annotations, :md5, :parentId])
+        @test all(k->hasattr(e,k), [:name, :description, :foo, :nerds, :annotations, :md5, :parentId])
         
         # Test modifying properties
         e.description = "Working, so far"
@@ -195,9 +195,9 @@ end
 
 @testset "attrs" begin
     f = File("foo.xyz", parent="syn1234", foo="bar")
-    @test haskey(f, "parentId")
-    @test haskey(f, "foo")
-    @test haskey(f, "path")
+    @test hasattr(f, "parentId")
+    @test hasattr(f, "foo")
+    @test hasattr(f, "path")
 end
 
 @testset "split_entity_namespaces" begin
