@@ -221,40 +221,40 @@ end
     entity = get(syn, entity.id)
 end
 
-@testset "uploadFileEntity" begin
-    # Create a FileEntity
-    # Dictionaries default to FileEntity as a type
-    fname = utils.make_bogus_data_file()
-    schedule_for_cleanup(fname)
-    entity = Dict("name"        => "fooUploadFileEntity",
-                  "description" => "A test file entity",
-                  "parentId"    => project.id)
-    entity = uploadfile(syn, entity, fname)
+# @testset "uploadFileEntity" begin
+#     # Create a FileEntity
+#     # Dictionaries default to FileEntity as a type
+#     fname = utils.make_bogus_data_file()
+#     schedule_for_cleanup(fname)
+#     entity = Dict("name"        => "fooUploadFileEntity",
+#                   "description" => "A test file entity",
+#                   "parentId"    => project.id)
+#     entity = uploadfile(syn, entity, fname)
 
-    # Download and verify
-    entity = downloadentity(syn, entity)
+#     # Download and verify
+#     entity = downloadentity(syn, entity)
 
-    print(entity.files)
-    @test entity.files[1] == splitdir(fname)[2]
-    # @test filecmp.cmp(fname, entity.path)
+#     print(entity.files)
+#     @test entity.files[1] == splitdir(fname)[2]
+#     # @test filecmp.cmp(fname, entity.path)
 
-    # Check if we upload the wrong type of file handle
-    fh = restget(syn, "/entity/$(entity.id)/filehandles")["list"][1]
-    @test fh["concreteType"] == "org.sagebionetworks.repo.model.file.S3FileHandle"
+#     # Check if we upload the wrong type of file handle
+#     fh = restget(syn, "/entity/$(entity.id)/filehandles")["list"][1]
+#     @test fh["concreteType"] == "org.sagebionetworks.repo.model.file.S3FileHandle"
 
-    # Create a different temporary file
-    fname = utils.make_bogus_data_file()
-    schedule_for_cleanup(fname)
+#     # Create a different temporary file
+#     fname = utils.make_bogus_data_file()
+#     schedule_for_cleanup(fname)
 
-    # Update existing FileEntity
-    entity = uploadfile(syn, entity, fname)
+#     # Update existing FileEntity
+#     entity = uploadfile(syn, entity, fname)
 
-    # Download and verify that it is the same file
-    entity = downloadentity(syn, entity)
-    print(entity.files)
-    @test entity.files[1] == splitdir(fname)[2]
-    # @test filecmp.cmp(fname, entity.path)
-end
+#     # Download and verify that it is the same file
+#     entity = downloadentity(syn, entity)
+#     print(entity.files)
+#     @test entity.files[1] == splitdir(fname)[2]
+#     # @test filecmp.cmp(fname, entity.path)
+# end
 
 @testset "test_downloadFile" begin
     # See if the a "wget" works
@@ -280,46 +280,46 @@ end
     @test version_check(current_version="999.999.999", version_url="http://dev-versions.synapse.sagebase.org/bad_filename_doesnt_exist") == false
 end
 
-@testset "provenance" begin
-    # Create a File Entity
-    fname = utils.make_bogus_data_file()
-    schedule_for_cleanup(fname)
-    data_entity = store(syn, File(fname, parent=project.id))
+# @testset "provenance" begin
+#     # Create a File Entity
+#     fname = utils.make_bogus_data_file()
+#     schedule_for_cleanup(fname)
+#     data_entity = store(syn, File(fname, parent=project.id))
 
-    # Create a File Entity of Code
-    path = splitext(tempname())[1] * ".py"
-    open(path, "w") do f
-        write(f, utils.normalize_lines("""
-            ## Chris's fabulous random data generator
-            ############################################################
-            import random
-            random.seed(12345)
-            data = [random.gauss(mu=0.0, sigma=1.0) for i in range(100)]
-            """))
-    end
-    schedule_for_cleanup(path)
-    code_entity = store(syn, File(path, parent=project.id))
-    # Create a new Activity asserting that the Code Entity was "used"
-    activity = Activity(name="random.gauss", description="Generate some random numbers")
-    used(activity, code_entity, wasExecuted=true)
-    used(activity, Dict("name"=>"Superhack", "url"=>"https://github.com/joe_coder/Superhack"), wasExecuted=true)
-    activity = setprovenance(syn, data_entity, activity)
+#     # Create a File Entity of Code
+#     path = splitext(tempname())[1] * ".py"
+#     open(path, "w") do f
+#         write(f, utils.normalize_lines("""
+#             ## Chris's fabulous random data generator
+#             ############################################################
+#             import random
+#             random.seed(12345)
+#             data = [random.gauss(mu=0.0, sigma=1.0) for i in range(100)]
+#             """))
+#     end
+#     schedule_for_cleanup(path)
+#     code_entity = store(syn, File(path, parent=project.id))
+#     # Create a new Activity asserting that the Code Entity was "used"
+#     activity = Activity(name="random.gauss", description="Generate some random numbers")
+#     used(activity, code_entity, wasExecuted=true)
+#     used(activity, Dict("name"=>"Superhack", "url"=>"https://github.com/joe_coder/Superhack"), wasExecuted=true)
+#     activity = setprovenance(syn, data_entity, activity)
     
-    # Retrieve and verify the saved Provenance record
-    retrieved_activity = getprovenance(syn, data_entity)
-    @test retrieved_activity == activity
+#     # Retrieve and verify the saved Provenance record
+#     retrieved_activity = getprovenance(syn, data_entity)
+#     @test retrieved_activity == activity
 
-    # Test Activity update
-    new_description = "Generate random numbers like a gangsta"
-    retrieved_activity["description"] = new_description
-    updated_activity = updateactivity(syn, retrieved_activity)
-    @test updated_activity["name"] == retrieved_activity["name"]
-    @test updated_activity["description"] == new_description
+#     # Test Activity update
+#     new_description = "Generate random numbers like a gangsta"
+#     retrieved_activity["description"] = new_description
+#     updated_activity = updateactivity(syn, retrieved_activity)
+#     @test updated_activity["name"] == retrieved_activity["name"]
+#     @test updated_activity["description"] == new_description
 
-    # Test delete
-    deleteprovenance(syn, data_entity)
-    @test_pythrows SynapseHTTPError getprovenance(syn,  data_entity.id)
-end
+#     # Test delete
+#     deleteprovenance(syn, data_entity)
+#     @test_pythrows SynapseHTTPError getprovenance(syn,  data_entity.id)
+# end
 
 @testset "annotations" begin
     # Get the annotations of an Entity
