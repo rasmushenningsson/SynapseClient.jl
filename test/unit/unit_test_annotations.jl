@@ -67,7 +67,7 @@ end
     @test sa["doubleAnnotations"]["zoo"] == [123.1, 456.2, 789.3]
     @test sa["stringAnnotations"]["species"] == ["Platypus"]
     @test sa["stringAnnotations"]["test_boolean"] == ["true"]
-    @test sa["stringAnnotations"]["test_mo_booleans"] == ["False", "True", "True", "False"]
+    @test lowercase.(sa["stringAnnotations"]["test_mo_booleans"]) == ["false", "true", "true", "false"]
 
     ## this part of the test is kinda fragile. It it breaks again, it should be removed
     bdays = [utils.from_unix_epoch_time(t) for t in sa["dateAnnotations"]["birthdays"]]
