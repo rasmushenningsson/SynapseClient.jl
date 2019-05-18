@@ -13,6 +13,7 @@ release_notes(args...;kwargs...) = synapseclient.release_notes(args...;kwargs...
 @synapsefunction Synapse downloadTableFile
 @synapsefunction Synapse get
 @synapsefunction Synapse getAnnotations
+@synapsefunction Synapse getChildren
 @synapsefunction Synapse getColumn
 @synapsefunction Synapse getColumns
 @synapsefunction Synapse getConfigFile

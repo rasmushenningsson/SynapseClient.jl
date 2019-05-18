@@ -37,6 +37,7 @@ export
 	downloadtablefile,
 	#get, # NB: it makes more sense to extend Base.get since it is a dictionary lookup
 	getannotations,
+	getchildren,
 	getcolumn,
 	getcolumns,
 	getconfigfile,
