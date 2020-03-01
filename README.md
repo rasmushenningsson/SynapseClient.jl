@@ -10,3 +10,7 @@ SynapseClient.jl assumes that the Synapse python client is already installed in 
 ```
 run(`$(Conda.SCRIPTDIR)/pip install synapseclient`)
 ```
+or, if Julia is configured to use your default python installation (which is the default on linux)
+```
+run(`pip install synapseclient`)
+```
